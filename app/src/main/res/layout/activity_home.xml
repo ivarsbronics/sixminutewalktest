@@ -13,4 +13,61 @@
         android:text="Log Out"
         android:layout_margin="5dp"/>
 
+    <Button
+        android:id="@+id/btnDiscoverDevices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnLogOut"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:text="Discover Bluetooth Devices" />
+
+    <ListView
+        android:id="@+id/deviceListView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/btnDiscoverDevices"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#dddddd" />
+
+    <TextView
+        android:id="@+id/txtDeviceName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/deviceListView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#dddddd"
+        android:textAlignment="center"
+        android:textSize="40dp" />
+
+    <TextView
+        android:id="@+id/txtHrValue"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/txtDeviceName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#dddddd"
+        android:textAlignment="center"
+        android:textSize="40dp" />
+
+    <Button
+        android:id="@+id/btnEndTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="End Test"
+        android:layout_below="@id/txtHrValue"
+        android:layout_margin="5dp"/>
+
 </RelativeLayout>
