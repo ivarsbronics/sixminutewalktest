@@ -67,11 +67,6 @@ public class RegisterActivity extends AppCompatActivity {
         String userPassword = password.getText().toString().trim();
         String userRePassword = repassword.getText().toString().trim();
 
-        String age = "25";
-        String height = "180";
-        String gender = "1";
-        String weight = "80";
-
         if(userEmail.equals("")||userPassword.equals("")||userReEmail.equals("")||userRePassword.equals("")) {
             Toast.makeText(RegisterActivity.this, "E-mail and Password fields are mandatory", Toast.LENGTH_LONG).show();
         }
@@ -105,7 +100,8 @@ public class RegisterActivity extends AppCompatActivity {
                                     //UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName("username").build();
                                     //currentUser.updateProfile(profileChangeRequest);
 
-                                    UserInfo userInfo = new UserInfo(age, height, gender, weight);
+                                    UserInfo userInfo = new UserInfo(null, null, null, null);
+                                    //UserInfo userInfo = new UserInfo(age, height, gender, weight);
 
                                     // get database user reference
                                     DatabaseReference usersReference = FirebaseDatabase.getInstance(dbInstance).getReference("Users");

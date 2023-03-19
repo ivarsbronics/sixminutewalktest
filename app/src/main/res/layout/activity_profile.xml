@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".ProfileActivity">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:text="Please Fill or Update Test Parameters"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:layout_margin="20dp"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Birth Date:"
+            android:gravity="center_vertical"
+            android:textSize="24dp"
+            />
+
+        <Button
+            android:id="@+id/btnDatePicker"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"
+            android:text="01 JAN 2022"
+            android:textAlignment="center"
+            android:textSize="24dp"
+            android:textColor="@color/black"
+            style="?android:spinnerStyle"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Gender:"
+            android:textSize="24dp"
+            android:id="@+id/txtGender"
+            android:gravity="center_vertical"
+            />
+        
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/rgGender"
+            >
+            
+            <RadioButton
+                android:id="@+id/rbMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Male"
+                android:onClick="onRadioButtonClicked"
+                />
+
+            <RadioButton
+                android:id="@+id/rbFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Female"
+                android:onClick="onRadioButtonClicked"
+                />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Height (cm):"
+            android:textSize="24dp"
+            android:gravity="center_vertical"
+            />
+
+        <EditText
+            android:id="@+id/etxtHeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24dp"
+            android:hint="Height"
+            android:inputType="textVisiblePassword"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Weight (kg):"
+            android:textSize="24dp"
+            android:gravity="center_vertical"
+            />
+
+        <EditText
+            android:id="@+id/etxtWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24dp"
+            android:hint="Weight"
+            android:inputType="textVisiblePassword"
+            />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSaveTestParameters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Test Parameters"
+        android:layout_marginTop="30dp"
+        />
+
+
+</LinearLayout>

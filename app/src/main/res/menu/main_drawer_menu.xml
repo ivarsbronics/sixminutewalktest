@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/navStartTest"
+            android:title="Start Test"/>
+        <item android:id="@+id/navDashboard"
+            android:title="Dashboard"/>
+        <item android:id="@+id/navThird"
+            android:title="Third"/>
+        <item android:id="@+id/navFourth"
+            android:title="Fourth"/>
+        <item android:id="@+id/navParameters"
+            android:title="Parameters"/>
+        <item android:id="@+id/navLogout"
+            android:title="Log Out"/>
+    </group>
+</menu>

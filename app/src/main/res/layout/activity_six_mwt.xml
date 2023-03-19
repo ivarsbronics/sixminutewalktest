@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SixMWTActivity">
+
+    <TextView
+        android:id="@+id/txtHeaderText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Connect BlueTooth Heart Rate (HR) Monitor"
+        android:gravity="center"
+        android:layout_margin="5dp"
+        android:textColor="@color/black"
+        android:textSize="35dp"
+        />
+
+    <TextView
+        android:id="@+id/txtInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Phase Information"
+        android:layout_below="@+id/txtHeaderText"
+        android:layout_margin="10dp"
+        android:textColor="@color/black"
+        android:textSize="14dp"
+        android:visibility="gone"
+        />
+
+    <Button
+        android:id="@+id/btnBTOnOff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Turn On BlueTooth"
+        android:layout_below="@id/txtInfo"
+        android:layout_margin="5dp"/>
+
+    <Button
+        android:id="@+id/btnSkipHRMonitor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Do test without HR Monitor"
+        android:layout_below="@id/btnBTOnOff"
+        android:layout_margin="5dp"/>
+
+    <Button
+        android:id="@+id/btnDiscoverDevices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnSkipHRMonitor"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:text="Discover Bluetooth Devices"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/deviceListView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/btnDiscoverDevices"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#dddddd"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/txtDeviceName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/deviceListView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#dddddd"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/txtHrValue"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtDeviceName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#dddddd"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/txtTimer"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtHrValue"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="#dddddd"
+        android:textAlignment="center"
+        android:text="00:00"
+        android:textSize="30dp"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnStartTimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Timer"
+        android:layout_below="@id/txtTimer"
+        android:layout_margin="5dp"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnResetTimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnStartTimer"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="Reset Timer"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnStartPreparationPhase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Preparation Phase"
+        android:layout_below="@id/btnResetTimer"
+        android:layout_margin="5dp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnStartTestPhase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Test Phase"
+        android:layout_below="@id/btnStartPreparationPhase"
+        android:layout_margin="5dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/txtTestInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Phase Information"
+        android:layout_below="@+id/btnStartTestPhase"
+        android:layout_margin="10dp"
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:textSize="24dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <Button
+        android:id="@+id/btnEndTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="End Test"
+        android:layout_below="@id/txtTestInfo"
+        android:layout_margin="5dp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnEndTestPrematurely"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="End Test"
+        android:layout_below="@id/btnEndTest"
+        android:layout_margin="5dp"
+        android:visibility="gone" />
+
+</RelativeLayout>
