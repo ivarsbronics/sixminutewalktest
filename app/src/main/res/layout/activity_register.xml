@@ -11,26 +11,57 @@
         android:id="@+id/txtRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register"
+        android:text="Registration"
         android:textSize="35dp"
         android:textStyle="bold"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/txtTermsOfUseAndDisclaimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Terms Of Use\nAnd\nDisclaimer"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_margin="10dp"
         android:gravity="center"
-        android:layout_marginTop="10dp"/>
+        android:layout_below="@+id/txtRegister"/>
+
+    <TextView
+        android:id="@+id/txtTestVersionTerms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This application is in TESTING PHASE as part of Master's Thesis.\n
+Please use fake/not-existing e-mail address for registration - no e-mail verification is
+performed in TESTING PHASE.\n
+This application gathers and uses set of parameters (provided by user), location data (gathered
+from your phone GPS) and heart rate data (gathered from Bluetooth Heart Rate monitor supporting
+Bluetooth standard for heart rate measurement) to perform evaluation of '6 Minute Walk Test'. By
+installing TEST VERSION of this application and registering you agree to gathering and processing
+of information mentioned above.\n
+After TESTING PHASE all user data that is gathered and used by application will be
+deleted. After data deletion none of previously registered users will be able to log into application."
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        android:layout_marginTop="1dp"
+        android:layout_below="@+id/txtTermsOfUseAndDisclaimer"/>
 
     <EditText
         android:id="@+id/etxtEMail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtRegister"
+        android:layout_below="@id/txtTestVersionTerms"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="15dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:background="#dddddd"
         android:drawableLeft="@drawable/ic_baseline_person_24"
         android:drawablePadding="20dp"
         android:hint="E-mail"
-        android:padding="20dp" />
+        android:padding="10dp"
+        android:visibility="gone"/>
 
     <EditText
         android:id="@+id/etxtReEMail"
@@ -45,7 +76,8 @@
         android:drawableLeft="@drawable/ic_baseline_person_24"
         android:drawablePadding="20dp"
         android:hint="Re-type E-mail"
-        android:padding="20dp" />
+        android:padding="10dp"
+        android:visibility="gone"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -54,11 +86,12 @@
         android:layout_below="@id/etxtReEMail"
         android:hint="Password"
         android:layout_margin="5dp"
-        android:padding="20dp"
+        android:padding="10dp"
         android:drawableLeft="@drawable/ic_baseline_password_24"
         android:drawablePadding="20dp"
         android:background="#dddddd"
-        android:inputType="textPassword"/>
+        android:inputType="textPassword"
+        android:visibility="gone"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -67,11 +100,12 @@
         android:layout_below="@id/etxtPassword"
         android:hint="Re-type Password"
         android:layout_margin="5dp"
-        android:padding="20dp"
+        android:padding="10dp"
         android:drawableLeft="@drawable/ic_baseline_password_24"
         android:drawablePadding="20dp"
         android:background="#dddddd"
-        android:inputType="textPassword"/>
+        android:inputType="textPassword"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnRegister"
@@ -80,7 +114,17 @@
         android:layout_below="@id/etxtRePassword"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Go" />
+        android:text="Register!"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnTermsApproval"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnRegister"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="I have read information above\nand\nAgree to Terms of use and disclaimer"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -88,7 +132,7 @@
         android:id="@+id/txtLogIn"
         android:text="Have an Account? Log In!"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/btnRegister"
+        android:layout_below="@id/btnTermsApproval"
         android:layout_marginTop="5dp"/>
 
 </RelativeLayout>

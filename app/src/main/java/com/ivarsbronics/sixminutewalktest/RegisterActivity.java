@@ -30,8 +30,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private EditText email, reemail, password, repassword;
-    private Button btnRegister;
-    private TextView txtLogin;
+    private Button btnRegister, btnTermsApproval;
+    private TextView txtLogin, txtTestVersionTerms;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
         repassword = findViewById(R.id.etxtRePassword);
         btnRegister = findViewById(R.id.btnRegister);
         txtLogin = findViewById(R.id.txtLogIn);
+        txtTestVersionTerms = findViewById(R.id.txtTestVersionTerms);
+        btnTermsApproval = findViewById(R.id.btnTermsApproval);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +61,22 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
             }
         });
+
+        btnTermsApproval.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                agreeToTermsAndProceed();
+            }
+        });
+    }
+
+    private void agreeToTermsAndProceed() {
+        txtTestVersionTerms.setVisibility(View.GONE);
+        btnTermsApproval.setVisibility(View.GONE);
+        email.setVisibility(View.VISIBLE);
+        reemail.setVisibility(View.VISIBLE);
+        password.setVisibility(View.VISIBLE);
+        repassword.setVisibility(View.VISIBLE);
     }
 
     private void register() {

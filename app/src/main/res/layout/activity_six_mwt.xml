@@ -10,40 +10,60 @@
         android:id="@+id/txtHeaderText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Connect BlueTooth Heart Rate (HR) Monitor"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         android:gravity="center"
-        android:layout_margin="5dp"
+        android:text="Before You Start"
         android:textColor="@color/black"
-        android:textSize="35dp"
-        />
+        android:textSize="35dp" />
 
     <TextView
         android:id="@+id/txtInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Phase Information"
+        android:text=""
         android:layout_below="@+id/txtHeaderText"
         android:layout_margin="10dp"
         android:textColor="@color/black"
         android:textSize="14dp"
-        android:visibility="gone"
         />
+
+    <Button
+        android:id="@+id/btnProceedToTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Proceed To Test"
+        android:layout_below="@id/txtInfo"
+        android:layout_margin="5dp"/>
+
+    <Button
+        android:id="@+id/btnUpdateTestParameters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Update Test Parameters"
+        android:layout_below="@id/btnProceedToTest"
+        android:layout_margin="5dp"/>
+    />
 
     <Button
         android:id="@+id/btnBTOnOff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Turn On BlueTooth"
-        android:layout_below="@id/txtInfo"
-        android:layout_margin="5dp"/>
+        android:text="Test Using Bluetooth Heart Rate Monitor"
+        android:layout_below="@id/btnUpdateTestParameters"
+        android:layout_margin="5dp"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnSkipHRMonitor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Do test without HR Monitor"
+        android:text="Test Without Heart Rate Monitor"
         android:layout_below="@id/btnBTOnOff"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnDiscoverDevices"
@@ -148,9 +168,12 @@
         android:id="@+id/btnStartTestPhase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start Test Phase"
         android:layout_below="@id/btnStartPreparationPhase"
-        android:layout_margin="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="Start Test Phase"
         android:visibility="gone" />
 
     <TextView
@@ -164,7 +187,6 @@
         android:textAlignment="center"
         android:textSize="24dp"
         android:visibility="gone"
-        tools:visibility="visible"
         />
 
     <Button
@@ -177,12 +199,47 @@
         android:visibility="gone" />
 
     <Button
+        android:id="@+id/btnSkipPreparation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Skip Preparation"
+        android:layout_below="@id/btnEndTest"
+        android:layout_margin="5dp"
+        android:visibility="gone" />
+
+    <Button
         android:id="@+id/btnEndTestPrematurely"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="End Test"
-        android:layout_below="@id/btnEndTest"
+        android:layout_below="@id/btnSkipPreparation"
         android:layout_margin="5dp"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/txtTLatitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Latitude"
+        android:layout_below="@+id/btnEndTestPrematurely"
+        android:layout_margin="10dp"
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:textSize="24dp"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/txtLongitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Longitude"
+        android:layout_below="@+id/txtTLatitude"
+        android:layout_margin="10dp"
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:textSize="24dp"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>

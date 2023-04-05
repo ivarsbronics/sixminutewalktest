@@ -6,20 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <Button
-        android:id="@+id/btnLogOut"
+    <TextView
+        android:id="@+id/txtDisclaimer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Log Out"
-        android:layout_margin="5dp" />
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:text="Terms of Use\nand\nDisclaimer"
+        android:textColor="@color/black"
+        android:textSize="35dp" />
+
+    <TextView
+        android:id="@+id/txtDisclaimerDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtDisclaimer"
+        android:layout_margin="10dp"
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        android:text="This application is in TESTING PHASE as part of Master's Thesis.\n
+Please use fake/not-existing e-mail address for registration - no e-mail verification is
+performed in TESTING PHASE.\n
+This application gathers and uses set of parameters (provided by user), location data (gathered
+from your phone GPS) and heart rate data (gathered from Bluetooth Heart Rate monitor supporting
+Bluetooth standard for heart rate measurement) to perform evaluation of '6 Minute Walk Test'. By
+installing TEST VERSION of this application and registering you agree to gathering and processing
+of information mentioned above.\n
+After TESTING PHASE all user data that is gathered and used by application will be
+deleted. After data deletion none of previously registered users will be able to log into application."
+        />
 
     <Button
         android:id="@+id/btnStartTest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start Test"
-        android:layout_below="@id/btnLogOut"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+        android:visibility="gone"/>
 
 
     <Button
@@ -28,6 +54,7 @@
         android:layout_height="wrap_content"
         android:text="To Dashboard"
         android:layout_below="@id/btnStartTest"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+        android:visibility="gone"/>
 
 </RelativeLayout>

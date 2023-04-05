@@ -38,7 +38,6 @@ public class ProfileActivity extends DrawerBaseActivity {
     ActivityProfileBinding activityProfileBinding;
 
     private FirebaseAuth mAuth;
-    //private TextView txtGender;
     private EditText etxtHeight, etxtWeight;
     private Button btnDatePicker, btnSaveTestParameters;
     private RadioGroup radioGroup;
@@ -190,12 +189,7 @@ public class ProfileActivity extends DrawerBaseActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    // send verification e-mail
-                    //currentUser.sendEmailVerification();
-                    //Toast.makeText(RegisterActivity.this, "Registration Successful! Please Verify Your e-mail!" , Toast.LENGTH_LONG).show();
-
-                    //without verification e-mail sending
-                    Toast.makeText(ProfileActivity.this, "Parameters Saved Successful!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ProfileActivity.this, "Parameters Saved Successful!", Toast.LENGTH_SHORT).show();
 
                     //Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
                     // makes sure that getting to previous activity is not possible, i.e., back button does not return to RegisterActivity

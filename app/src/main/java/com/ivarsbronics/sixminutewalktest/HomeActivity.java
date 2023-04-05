@@ -51,6 +51,7 @@ public class HomeActivity extends DrawerBaseActivity{
     private FirebaseAuth mAuth;
     private Button btnLogOut, btnStartTest, btnToDashboard;
     private FirebaseUser currentUser;
+    private TextView txtDisclaimerDetails;
 
 
     @Override
@@ -62,19 +63,13 @@ public class HomeActivity extends DrawerBaseActivity{
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        btnLogOut = findViewById(R.id.btnLogOut);
         btnStartTest = findViewById(R.id.btnStartTest);
         btnToDashboard = findViewById(R.id.btnToDashboard);
+        txtDisclaimerDetails = findViewById(R.id.txtDisclaimerDetails);
 
-        btnLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                logout();
-            }
-        });
 
-        btnStartTest.setOnClickListener(new View.OnClickListener() {
+
+        /*btnStartTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goToTest();
@@ -86,7 +81,7 @@ public class HomeActivity extends DrawerBaseActivity{
             public void onClick(View view) {
                 goToDashboard();
             }
-        });
+        });*/
     }
 
     public void goToTest() {
@@ -95,10 +90,5 @@ public class HomeActivity extends DrawerBaseActivity{
 
     public void goToDashboard() {
         startActivity(new Intent(HomeActivity.this, DashboardActivity.class));
-    }
-
-    public void logout() {
-        FirebaseAuth.getInstance().signOut();
-        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
     }
 }
