@@ -2,4 +2,19 @@
     <string name="app_name">SixMinuteWalkTest</string>
     <string name="menu_drawer_open">Drawer Open</string>
     <string name="menu_drawer_closed">Drawer Closed</string>
+    <string-array name="BorgScale">
+        <item>"Not Selected"</item>
+        <item>"Not at all"</item>
+        <item>"Very, very slight"</item>
+        <item>"Very slight"</item>
+        <item>"Slight"</item>
+        <item>"Moderate"</item>
+        <item>"Somewhat severe"</item>
+        <item>"Severe"</item>
+        <item>"Between severe and very severe"</item>
+        <item>"Very severe"</item>
+        <item>"Between very severe and almost maximal"</item>
+        <item>"Almost maximal"</item>
+        <item>"Maximal"</item>
+    </string-array>
 </resources>

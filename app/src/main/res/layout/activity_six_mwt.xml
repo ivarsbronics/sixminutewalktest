@@ -23,12 +23,14 @@
         android:id="@+id/txtInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
         android:layout_below="@+id/txtHeaderText"
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:text=""
         android:textColor="@color/black"
-        android:textSize="14dp"
-        />
+        android:textSize="14dp" />
 
     <Button
         android:id="@+id/btnProceedToTest"
@@ -42,9 +44,12 @@
         android:id="@+id/btnUpdateTestParameters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Test Parameters"
         android:layout_below="@id/btnProceedToTest"
-        android:layout_margin="5dp"/>
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="Update Test Parameters" />
     />
 
     <Button
@@ -54,7 +59,8 @@
         android:text="Test Using Bluetooth Heart Rate Monitor"
         android:layout_below="@id/btnUpdateTestParameters"
         android:layout_margin="5dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/btnSkipHRMonitor"
@@ -63,7 +69,8 @@
         android:text="Test Without Heart Rate Monitor"
         android:layout_below="@id/btnBTOnOff"
         android:layout_margin="5dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/btnDiscoverDevices"
@@ -74,7 +81,9 @@
         android:layout_marginBottom="5dp"
         android:layout_marginRight="5dp"
         android:text="Discover Bluetooth Devices"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
 
     <ListView
         android:id="@+id/deviceListView"
@@ -86,7 +95,8 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:background="#dddddd"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/txtDeviceName"
@@ -101,7 +111,8 @@
         android:background="#dddddd"
         android:textAlignment="center"
         android:textSize="30dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/txtHrValue"
@@ -116,7 +127,8 @@
         android:background="#dddddd"
         android:textAlignment="center"
         android:textSize="30dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/txtTimer"
@@ -132,7 +144,8 @@
         android:textAlignment="center"
         android:text="00:00"
         android:textSize="30dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/btnStartTimer"
@@ -141,7 +154,8 @@
         android:text="Start Timer"
         android:layout_below="@id/txtTimer"
         android:layout_margin="5dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/btnResetTimer"
@@ -153,7 +167,8 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:text="Reset Timer"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/btnStartPreparationPhase"
@@ -162,7 +177,8 @@
         android:text="Start Preparation Phase"
         android:layout_below="@id/btnResetTimer"
         android:layout_margin="5dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/btnStartTestPhase"
@@ -174,7 +190,8 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:text="Start Test Phase"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/txtTestInfo"
@@ -187,59 +204,195 @@
         android:textAlignment="center"
         android:textSize="24dp"
         android:visibility="gone"
+        tools:visibility="visible"
         />
+
+    <TextView
+        android:id="@+id/txtDistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_below="@+id/txtTestInfo"
+        android:layout_margin="10dp"
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:textSize="24dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <EditText
+        android:id="@+id/etDistance"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:hint="Value"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/txtDistance"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:inputType="textVisiblePassword"
+        />
+
+    <TextView
+        android:id="@+id/txtDyspnea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pre-Test Dyspnea:"
+        android:layout_below="@+id/etDistance"
+        android:layout_marginLeft="15dp"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <Spinner
+        android:id="@+id/spinnerDyspnea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtDyspnea"
+        android:layout_margin="5dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dialog"
+        android:tooltipText="Select DYspnea Level"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/txtFatigue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pre-Test Fatigue:"
+        android:layout_marginLeft="15dp"
+        android:layout_below="@+id/spinnerDyspnea"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <Spinner
+        android:id="@+id/spinnerFatigue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtFatigue"
+        android:layout_margin="5dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:tooltipText="Select Fatigue Level"
+        android:spinnerMode="dialog"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <TextView
+        android:id="@+id/txtBloodPressure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pre-Test Blood Pressure:"
+        android:layout_marginLeft="15dp"
+        android:layout_below="@+id/spinnerFatigue"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <LinearLayout
+        android:id="@+id/layoutBloodPressure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtBloodPressure"
+        android:layout_margin="5dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+        <EditText
+            android:id="@+id/etBloodPressureSystolic"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:hint="Systolic"
+            android:layout_marginLeft="10dp"
+            android:inputType="textVisiblePassword"
+            />
+        <EditText
+            android:id="@+id/etBloodPressureDiastolic"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:hint="Diastolic"
+            android:layout_marginLeft="10dp"
+            android:inputType="textVisiblePassword"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtOxygenSaturation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pre-Test Oxygen Saturation:"
+        android:layout_marginLeft="15dp"
+        android:layout_below="@+id/layoutBloodPressure"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+    <EditText
+        android:id="@+id/etOxygenSaturation"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:hint="Value"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/txtOxygenSaturation"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:inputType="textVisiblePassword"
+        />
+
+    <Button
+        android:id="@+id/btnContinue"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/etOxygenSaturation"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="Continue"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/btnEndTest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="End Test"
-        android:layout_below="@id/txtTestInfo"
+        android:layout_below="@id/btnContinue"
         android:layout_margin="5dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/btnSkipPreparation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Skip Preparation"
-        android:layout_below="@id/btnEndTest"
+        android:layout_above="@id/btnEndTestPrematurely"
         android:layout_margin="5dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/btnEndTestPrematurely"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="End Test"
-        android:layout_below="@id/btnSkipPreparation"
-        android:layout_margin="5dp"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/txtTLatitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Latitude"
-        android:layout_below="@+id/btnEndTestPrematurely"
-        android:layout_margin="10dp"
-        android:textColor="@color/black"
-        android:textAlignment="center"
-        android:textSize="24dp"
-        android:visibility="gone"
-        />
-
-    <TextView
-        android:id="@+id/txtLongitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Longitude"
-        android:layout_below="@+id/txtTLatitude"
-        android:layout_margin="10dp"
-        android:textColor="@color/black"
-        android:textAlignment="center"
-        android:textSize="24dp"
-        android:visibility="gone"
-        />
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="End Test Prematurely\n(test progress not saved)"
+        android:visibility="visible" />
 
 </RelativeLayout>

@@ -109,7 +109,7 @@ deleted. After data deletion none of previously registered users will be able to
 
     <Button
         android:id="@+id/btnRegister"
-        android:layout_width="100dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/etxtRePassword"
         android:layout_centerHorizontal="true"

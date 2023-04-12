@@ -42,7 +42,7 @@ public class TestResultsActivity extends DrawerBaseActivity {
     private double totalDistance, estimatedDistance;
     private long testStartMillis;
 
-    private String gender, bd, testResults; //, height, weight;
+    private String gender, bd, testResults, testEndPrematurely; //, height, weight;
 
     private TextView txtTestInfo;
 
@@ -66,6 +66,7 @@ public class TestResultsActivity extends DrawerBaseActivity {
         hrMap = (HashMap<String, String>) intent.getSerializableExtra("EXTRA_HR_MAP");
         totalDistance = (double) intent.getSerializableExtra("EXTRA_DISTANCE");
         testStartMillis = (long) intent.getSerializableExtra("EXTRA_TEST_ID");
+        testEndPrematurely = (String) intent.getSerializableExtra("EXTRA_END_PREMATURELY");
 
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance(dbInstance).getReference("Users").child(currentUser.getUid());

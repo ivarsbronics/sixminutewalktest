@@ -77,6 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
         reemail.setVisibility(View.VISIBLE);
         password.setVisibility(View.VISIBLE);
         repassword.setVisibility(View.VISIBLE);
+        btnRegister.setVisibility(View.VISIBLE);
     }
 
     private void register() {
