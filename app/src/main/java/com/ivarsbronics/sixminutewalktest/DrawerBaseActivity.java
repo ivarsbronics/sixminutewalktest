@@ -49,7 +49,7 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
                 overridePendingTransition(0,0);
                 break;
 
-            case R.id.navDashboard:
+            /*case R.id.navDashboard:
                 startActivity(new Intent(this, DashboardActivity.class));
                 overridePendingTransition(0,0);
                 break;
@@ -62,7 +62,7 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
             case R.id.navFourth:
                 startActivity(new Intent(this, DashboardActivity.class));
                 overridePendingTransition(0,0);
-                break;
+                break;*/
 
             case R.id.navParameters:
                 startActivity(new Intent(this, ProfileActivity.class));

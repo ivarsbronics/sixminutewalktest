@@ -30,7 +30,9 @@
         android:layout_marginBottom="10dp"
         android:text=" "
         android:textColor="@color/black"
-        android:textSize="14dp" />
+        android:textSize="14dp"
+        android:background="@android:drawable/editbox_background"
+        />
 
     <Button
         android:layout_width="match_parent"

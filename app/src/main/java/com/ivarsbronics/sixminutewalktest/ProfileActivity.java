@@ -38,6 +38,7 @@ public class ProfileActivity extends DrawerBaseActivity {
     ActivityProfileBinding activityProfileBinding;
 
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     private EditText etxtHeight, etxtWeight;
     private Button btnDatePicker, btnSaveTestParameters;
     private RadioGroup radioGroup;
@@ -53,7 +54,7 @@ public class ProfileActivity extends DrawerBaseActivity {
         setContentView(activityProfileBinding.getRoot());
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUser = mAuth.getCurrentUser();
         
         initDatePicker(-1, -1, -1);
         
@@ -67,6 +68,7 @@ public class ProfileActivity extends DrawerBaseActivity {
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance(dbInstance).getReference("Users").child(currentUser.getUid());
         databaseReference.addValueEventListener(new ValueEventListener() {
+            /*onDataChange is called right away when connection to listener is established and any time data has changed in database*/
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {

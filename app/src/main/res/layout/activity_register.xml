@@ -32,6 +32,7 @@
         android:id="@+id/txtTestVersionTerms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:drawable/editbox_background"
         android:text="This application is in TESTING PHASE as part of Master's Thesis.\n
 Please use fake/not-existing e-mail address for registration - no e-mail verification is
 performed in TESTING PHASE.\n

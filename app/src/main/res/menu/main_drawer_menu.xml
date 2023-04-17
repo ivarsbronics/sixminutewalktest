@@ -4,11 +4,14 @@
         <item android:id="@+id/navStartTest"
             android:title="Start Test"/>
         <item android:id="@+id/navDashboard"
-            android:title="Dashboard"/>
+            android:title="Dashboard"
+            android:visible="false"/>
         <item android:id="@+id/navThird"
-            android:title="Third"/>
+            android:title="Third"
+            android:visible="false"/>
         <item android:id="@+id/navFourth"
-            android:title="Fourth"/>
+            android:title="Fourth"
+            android:visible="false"/>
         <item android:id="@+id/navParameters"
             android:title="Parameters"/>
         <item android:id="@+id/navLogout"
