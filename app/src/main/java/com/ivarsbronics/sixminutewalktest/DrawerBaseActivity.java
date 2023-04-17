@@ -77,4 +77,9 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         }
         return false;
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

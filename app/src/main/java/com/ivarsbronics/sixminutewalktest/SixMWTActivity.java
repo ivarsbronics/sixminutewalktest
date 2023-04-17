@@ -29,6 +29,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.format.DateFormat;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -51,67 +53,69 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.SphericalUtil;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, LocationListener {
-
+    /*logging parameter*/
     private static final String TAG = "SixMWTActivity";
-
+    /*database instance variable - needed if database chosen is in different location than default*/
     private static final String dbInstance = "https://sixminutewalktest-ff14a-default-rtdb.europe-west1.firebasedatabase.app";
-
-    private String valueFatigue, valueDyspnea;
-    private String preTestValueDyspnea, preTestValueFatigue, preTestBloodPressureSystolic, preTestBloodPressureDiastolic, preTestOxygenSaturation;
-    private String postTestValueDyspnea, postTestValueFatigue, postTestBloodPressureSystolic, postTestBloodPressureDiastolic, postTestOxygenSaturation;
-
-    private static final long startTimeInMillisPrep = 5000; //600000;
-    private static final long startTimeInMillisTest = 5000; // 360000;
-
+    /*time values in milliseconds for preparation phase*/
+    private static final long startTimeInMillisPrep = 600000;
+    /*time values in milliseconds for test phase*/
+    private static final long startTimeInMillisTest = 360000;
     /*heart rate service uuid*/
     private static final UUID HEART_RATE_SERVICE = UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb"); //UUID.nameUUIDFromBytes(new byte [] {(byte) 0x180D});
     /*heart rate measurement characteristic uuid*/
     private static final UUID HEART_RATE_MEASUREMENT = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"); //UUID.nameUUIDFromBytes(new byte [] {(byte) 0x2A37});
     /*client characteristic configuration uuid - necessary for enabling notifications from ble devices*/
     private static final UUID CLIENT_CHARACTERISTIC_CONFIGURATION = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private static final int FINE_LOCATION_PERMISSIONS = 100; //FINE_LOCATION_PERMISSIONS arbitrary integer for permission request
-    private static final int BLUETOOTH_CONNECT_PERMISSIONS = 101; // arbitrary integer for permission request
-    private static final int BLUETOOTH_SCAN_PERMISSIONS = 102; // arbitrary integer for permissions request
+    /*arbitrary integer for FINE_LOCATION permission request*/
+    private static final int FINE_LOCATION_PERMISSIONS = 100;
+    /*arbitrary integer for BLUETOOTH_CONNECT permission request*/
+    private static final int BLUETOOTH_CONNECT_PERMISSIONS = 101;
+    /*arbitrary integer for BLUETOOTH_SCAN permissions request*/
+    private static final int BLUETOOTH_SCAN_PERMISSIONS = 102;
 
-    private LinearLayout layoutBloodPressure;
+    /*authentication variable*/
     private FirebaseAuth mAuth;
+    /*current user variable*/
+    private FirebaseUser currentUser;
+
+    /*parameters for interactions with layout components*/
     private Button btnBTOnOff, btnSkipHRMonitor, btnDiscoverDevices, btnStartTimer, btnResetTimer,
             btnEndTest, btnStartPreparationPhase, btnStartTestPhase, btnEndTestPrematurely,
             btnUpdateTestParameters, btnProceedToTest, btnSkipPreparation, btnContinue;
-    private TextView txtHeaderText, txtDeviceName, txtHrValue, txtTimer, txtInfo, txtTestInfo, txtDyspnea, txtFatigue, txtBloodPressure, txtOxygenSaturation;
-    private TextView txtDistance;
     private EditText etBloodPressureSystolic, etBloodPressureDiastolic, etOxygenSaturation, etDistance;
+    private LinearLayout layoutBloodPressure;
+    private TextView txtHeaderText, txtDeviceName, txtHrValue, txtTimer, txtInfo, txtTestInfo,
+            txtDyspnea, txtFatigue, txtBloodPressure, txtOxygenSaturation, txtDistance;
     private Spinner spinnerDyspnea, spinnerFatigue;
-    double latitude, longitude;
-    ListView deviceListView;
-    public ArrayList<BluetoothDevice> btDeviceArrayList = new ArrayList<>();
-    BluetoothAdapter bluetoothAdapter;
-    BluetoothDevice bluetoothDevice;
-    //BluetoothManager bluetoothManager;
-    BluetoothGatt bluetoothGatt;
-    public DeviceListAdapter deviceListAdapter;
-
-    //FusedLocationProviderClient fusedLocationProviderClient;
-
-    //LocationRequest locationRequest;
 
     private HashMap<String, String> hrMap = new HashMap();
     private HashMap<String, LatLng> locationMap = new HashMap();
     private HashMap<String, String> testParameters = new HashMap();
 
-    //private Map hrMap = new HashMap();
-    //private Map locationMap = new HashMap();
+    private TestInfo testInfo = new TestInfo();
     private int prepPhaseHRStart, prepPhaseHREnd, prepPhaseHRMin, prepPhaseHRMax;
     private boolean doHrMap = false;
     private boolean doLocationMap = false;
@@ -123,29 +127,35 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
     private boolean hrMonitorConnected = false;
     private boolean endTestPrematurely = false;
     private boolean saveLocationData = false;
+    private boolean timerRunning = false;
     private long testStartMillis = 0;
     private long millisSinceStart = 0;
-
-    private FirebaseUser currentUser;
-
-    private CountDownTimer countDownTimer;
-
-    private boolean timerRunning;
-
     private long timeLeftInMillis = startTimeInMillisPrep;
-
-    private Vibrator vibrator;
-
-    LocationManager locationManager;
-    Criteria criteria;
-
-    private Location prevLocation;
     private double totalDistance = 0;
     private double totalDistance1 = 0;
+    private double latitude, longitude;
 
-    ArrayAdapter<CharSequence> arrayAdapterScale;
+    private CountDownTimer countDownTimer;
+    private Vibrator vibrator;
+    private LocationManager locationManager;
+    private Location prevLocation;
+    private Criteria criteria;
 
-    //@SuppressLint("MissingPermission")
+    private ArrayAdapter<CharSequence> arrayAdapterScale;
+    public ArrayList<BluetoothDevice> btDeviceArrayList = new ArrayList<>();
+    private ListView deviceListView;
+
+    private String valueFatigue, valueDyspnea, preTestValueDyspnea, preTestValueFatigue,
+            preTestBloodPressureSystolic, preTestBloodPressureDiastolic, preTestOxygenSaturation,
+            postTestValueDyspnea, postTestValueFatigue, postTestBloodPressureSystolic,
+            postTestBloodPressureDiastolic, postTestOxygenSaturation;
+
+    BluetoothAdapter bluetoothAdapter;
+    BluetoothDevice bluetoothDevice;
+    BluetoothGatt bluetoothGatt;
+
+    public DeviceListAdapter deviceListAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,13 +164,24 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        layoutBloodPressure = findViewById(R.id.layoutBloodPressure);
-
         btnUpdateTestParameters = findViewById(R.id.btnUpdateTestParameters);
         btnProceedToTest = findViewById(R.id.btnProceedToTest);
         btnBTOnOff = findViewById(R.id.btnBTOnOff);
         btnSkipHRMonitor = findViewById(R.id.btnSkipHRMonitor);
         btnDiscoverDevices = findViewById(R.id.btnDiscoverDevices);
+        btnStartTimer = findViewById(R.id.btnStartTimer);
+        btnResetTimer = findViewById(R.id.btnResetTimer);
+        btnEndTest = findViewById(R.id.btnEndTest);
+        btnStartPreparationPhase = findViewById(R.id.btnStartPreparationPhase);
+        btnStartTestPhase = findViewById(R.id.btnStartTestPhase);
+        btnEndTestPrematurely = findViewById(R.id.btnEndTestPrematurely);
+        btnSkipPreparation = findViewById(R.id.btnSkipPreparation);
+        btnContinue = findViewById(R.id.btnContinue);
+        etBloodPressureSystolic = findViewById(R.id.etBloodPressureSystolic);
+        etBloodPressureDiastolic = findViewById(R.id.etBloodPressureDiastolic);
+        etOxygenSaturation = findViewById(R.id.etOxygenSaturation);
+        etDistance = findViewById(R.id.etDistance);
+        layoutBloodPressure = findViewById(R.id.layoutBloodPressure);
         txtHeaderText = findViewById(R.id.txtHeaderText);
         txtDeviceName = findViewById(R.id.txtDeviceName);
         txtHrValue = findViewById(R.id.txtHrValue);
@@ -171,31 +192,20 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         txtFatigue = findViewById(R.id.txtFatigue);
         txtBloodPressure = findViewById(R.id.txtBloodPressure);
         txtOxygenSaturation = findViewById(R.id.txtOxygenSaturation);
-        etBloodPressureSystolic = findViewById(R.id.etBloodPressureSystolic);
-        etBloodPressureDiastolic = findViewById(R.id.etBloodPressureDiastolic);
-        etOxygenSaturation = findViewById(R.id.etOxygenSaturation);
-        etDistance = findViewById(R.id.etDistance);
-        deviceListView = (ListView) findViewById(R.id.deviceListView);
-        btnStartTimer = findViewById(R.id.btnStartTimer);
-        btnResetTimer = findViewById(R.id.btnResetTimer);
-        btnEndTest = findViewById(R.id.btnEndTest);
-        btnStartPreparationPhase = findViewById(R.id.btnStartPreparationPhase);
-        btnStartTestPhase = findViewById(R.id.btnStartTestPhase);
-        btnEndTestPrematurely = findViewById(R.id.btnEndTestPrematurely);
-        btnSkipPreparation = findViewById(R.id.btnSkipPreparation);
-        btnContinue = findViewById(R.id.btnContinue);
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        txtDistance = findViewById(R.id.txtDistance);
         spinnerDyspnea = findViewById(R.id.spinnerDyspnea);
         spinnerFatigue = findViewById(R.id.spinnerFatigue);
+
+        deviceListView = (ListView) findViewById(R.id.deviceListView);
 
         prepPhaseHRMin = 200;
         prepPhaseHRMax = 0;
 
-        txtDistance = findViewById(R.id.txtDistance);
-
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        /*set criteria for location accuracy*/
         criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setPowerRequirement(Criteria.POWER_HIGH);
@@ -204,7 +214,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
         txtInfo.setText("Before You start, please re-check Test Parameters and update them to have" +
                 " most accurate estimated values selected for You!");
-
+        /*steps to setup drop down lists for dyspnea and fatigue scales*/
         /*set array adapter to contain values*/
         arrayAdapterScale = ArrayAdapter.createFromResource(this, R.array.BorgScale, R.layout.spinner_layout);
         /*layout to use when list is shown to user*/
@@ -284,6 +294,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             @Override
             public void onClick(View view) {
                 hrMonitorSelected = false;
+                testInfo.setHrMonitorSkipped("Y");
                 preparePreparationPhase();
             }
         });
@@ -337,11 +348,11 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             @Override
             public void onClick(View view) {
                 if (preparationPhase) {
-                    preTestValueDyspnea = valueDyspnea;
-                    preTestValueFatigue = valueFatigue;
-                    preTestBloodPressureSystolic = etBloodPressureSystolic.getText().toString();
-                    preTestBloodPressureDiastolic = etBloodPressureDiastolic.getText().toString();
-                    preTestOxygenSaturation = etOxygenSaturation.getText().toString();
+                    testInfo.setPreTestValueDyspnea(valueDyspnea);
+                    testInfo.setPreTestValueFatigue(valueFatigue);
+                    testInfo.setPreTestBloodPressureSystolic(etBloodPressureSystolic.getText().toString());
+                    testInfo.setPreTestBloodPressureDiastolic(etBloodPressureDiastolic.getText().toString());
+                    testInfo.setPreTestOxygenSaturation(etOxygenSaturation.getText().toString());
                     prepareTestPhase();
                 }
             }
@@ -370,7 +381,9 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         } else {
             Log.d(TAG, "GRANTED ALREADY!!!! Manifest.permission.BLUETOOTH_CONNECT");
         }
-        bluetoothGatt.disconnect();
+        if (bluetoothGatt != null) {
+            bluetoothGatt.disconnect();
+        }
         locationManager.removeUpdates(SixMWTActivity.this);
         super.onDestroy();
     }
@@ -404,33 +417,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         }
     }
 
-    private void startPreparationPhase() {
-        preparationPhase = true;
-        getPrepPhaseHRStart = true;
-        txtInfo.setVisibility(View.GONE);
-        btnStartPreparationPhase.setVisibility(View.GONE);
-        if (hrMonitorConnected) {
-            txtDeviceName.setVisibility(View.VISIBLE);
-            txtHrValue.setVisibility(View.VISIBLE);
-        }
-        txtTimer.setVisibility(View.VISIBLE);
-        btnStartTimer.setVisibility(View.VISIBLE);
-        btnResetTimer.setVisibility(View.INVISIBLE);
-        btnSkipPreparation.setVisibility(View.VISIBLE);
-    }
-
-    private void resetTimer() {
-        if (preparationPhase) {
-            timeLeftInMillis = startTimeInMillisPrep;
-        }
-        if (testPhase) {
-            timeLeftInMillis = startTimeInMillisTest;
-        }
-        updateTimerText();
-        btnResetTimer.setVisibility(View.INVISIBLE);
-        btnStartTimer.setClickable(true);
-    }
-
     private void startTimer() {
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
@@ -459,6 +445,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     doHrMap = false;
                     doLocationMap = false;
                     locationManager.removeUpdates(SixMWTActivity.this);
+                    calculateAdditionalTestDetails();
                     txtDistance.setText("Distance Covered in meters (GPS)\n(If incorrect adjust value)");
                     txtDistance.setTextSize(18);
                     etDistance.setVisibility(View.VISIBLE);
@@ -515,68 +502,16 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         btnResetTimer.setVisibility(View.INVISIBLE);
     }
 
-
-    private void preTestParameters() {
-        btnStartTimer.setVisibility(View.GONE);
-        btnResetTimer.setVisibility(View.GONE);
-        txtDeviceName.setVisibility(View.GONE);
-        txtHrValue.setVisibility(View.GONE);
-        txtTimer.setVisibility(View.GONE);
-        btnSkipPreparation.setVisibility(View.GONE);
-        if (prepPhaseHRMin == 200) {
-            prepPhaseHRMin = 0;
+    private void resetTimer() {
+        if (preparationPhase) {
+            timeLeftInMillis = startTimeInMillisPrep;
         }
-        getPrepPhaseHREnd = true;
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (testPhase) {
+            timeLeftInMillis = startTimeInMillisTest;
         }
-        txtHeaderText.setText("Pre-Test Parameters");
-        txtInfo.setText("Please fill pre-test parameters if you have tools to do the " +
-                "measurements.");
-        txtDyspnea.setVisibility(View.VISIBLE);
-        txtFatigue.setVisibility(View.VISIBLE);
-        spinnerDyspnea.setVisibility(View.VISIBLE);
-        spinnerFatigue.setVisibility(View.VISIBLE);
-        txtBloodPressure.setVisibility(View.VISIBLE);
-        txtOxygenSaturation.setVisibility(View.VISIBLE);
-        layoutBloodPressure.setVisibility(View.VISIBLE);
-        etOxygenSaturation.setVisibility(View.VISIBLE);
-        btnContinue.setVisibility(View.VISIBLE);
-    }
-
-    private void prepareTestPhase() {
-        txtInfo.setVisibility(View.VISIBLE);
-        txtInfo.setText(/*"HRStart: " + prepPhaseHRStart + "\n" +
-                "HREnd: " + prepPhaseHREnd + "\n" +
-                "HRMin: " + prepPhaseHRMin + "\n" +
-                "HRMax: " + prepPhaseHRMax + "\n\n" +*/
-                "The object of this test is to walk as far as possible for 6 minutes. Six " +
-                "minutes is a long time to walk, so you will be exerting yourself. You will " +
-                "probably get out of breath or become exhausted. You are permitted to slow " +
-                "down, to stop, and to rest as necessary. You may lean against the wall or " +
-                "any other object while rest-ing, but resume walking as soon as you are able.\n\n" +
-                "You will be walking back and forth around the cones in the hallway. You should " +
-                "pivot briskly around the cones and continueback the other way without hesitation. " +
-                "Try turning motion by walking one lap yourself. Walk and pivot around a cone briskly.\n\n" +
-                "Are you ready to do that? Please use any tool necessary for keeping lap counter if " +
-                "you are doing laps. Increase count each time you turn around at this starting point. " +
-                "Remember that the object is to walk AS FAR AS POSSIBLE for 6 minutes, but don’t run or jog.\n\n" +
-                "Start now, or whenever you are ready by starting Timer and walking the longest distance possible.");
-        preparationPhase = false;
-        txtHeaderText.setText("Test Phase");
-        btnStartTestPhase.setVisibility(View.VISIBLE);
-
-        txtDyspnea.setVisibility(View.GONE);
-        txtFatigue.setVisibility(View.GONE);
-        spinnerDyspnea.setVisibility(View.GONE);
-        spinnerFatigue.setVisibility(View.GONE);
-        txtBloodPressure.setVisibility(View.GONE);
-        txtOxygenSaturation.setVisibility(View.GONE);
-        layoutBloodPressure.setVisibility(View.GONE);
-        etOxygenSaturation.setVisibility(View.GONE);
-        btnContinue.setVisibility(View.GONE);
+        updateTimerText();
+        btnResetTimer.setVisibility(View.INVISIBLE);
+        btnStartTimer.setClickable(true);
     }
 
     private void updateTimerText() {
@@ -595,35 +530,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         txtTimer.setText(timeLeft);
     }
 
-    private void testNotification(int i) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //used from API 26
-            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            //deprecated from API 26
-            vibrator.vibrate(500);
-        }
-        txtTestInfo.setVisibility(View.VISIBLE);
-        if (i == 5) {
-            txtTestInfo.setText("You are doing well!\nYou have 5 minutes togo!");
-        }
-        if (i == 4) {
-            txtTestInfo.setText("Keep up the good work!\nYou have 4 minutes to go!");
-        }
-        if (i == 3) {
-            txtTestInfo.setText("You are doing well!\nYou are halfway done!");
-        }
-        if (i == 2) {
-            txtTestInfo.setText("Keep up the good work!\nYou have only 2 minutes left!");
-        }
-        if (i == 1) {
-            txtTestInfo.setText("You are doing well!\nYou have only 1 minute to go!");
-        }
-        if (i == 0) {
-            txtTestInfo.setText("You did great!\nThis was good effort!");
-        }
-    }
-
     private void pauseTimer() {
         countDownTimer.cancel();
         timerRunning = false;
@@ -635,36 +541,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
     public void onBackPressed() {
         /*do nothing if Back button is pressed*/
         //super.onBackPressed();
-    }
-
-    private void startTestPhase() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            txtDistance.setVisibility(View.VISIBLE);
-            saveLocationData = true;
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
-            Log.d(TAG, "### ACCESS_FINE_LOCATION granted!!");
-        } else {
-            Log.d(TAG, "### ACCESS_FINE_LOCATION NOT granted!!");
-            //if permissions not granted
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Log.d(TAG, "### request ACCESS_FINE_LOCATION!!");
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSIONS);
-            }
-        }
-        txtHeaderText.setText("Test Phase");
-        testPhase = true;
-        resetTimer();
-        btnBTOnOff.setVisibility(View.GONE);
-        btnSkipHRMonitor.setVisibility(View.GONE);
-        txtInfo.setVisibility(View.GONE);
-        btnStartTestPhase.setVisibility(View.GONE);
-        if (hrMonitorConnected) {
-            txtDeviceName.setVisibility(View.VISIBLE);
-            txtHrValue.setVisibility(View.VISIBLE);
-        }
-        txtTimer.setVisibility(View.VISIBLE);
-        btnStartTimer.setVisibility(View.VISIBLE);
-        btnResetTimer.setVisibility(View.INVISIBLE);
     }
 
     //@SuppressLint("MissingPermission")
@@ -705,106 +581,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         btnDiscoverDevices.setVisibility(View.VISIBLE);
     }
 
-    private void endTest() {
-        Log.d(TAG, "### endTest()");
-        postTestValueDyspnea = valueDyspnea;
-        postTestValueFatigue = valueFatigue;
-        postTestBloodPressureSystolic = etBloodPressureSystolic.getText().toString();
-        postTestBloodPressureDiastolic = etBloodPressureDiastolic.getText().toString();
-        postTestOxygenSaturation = etOxygenSaturation.getText().toString();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, BLUETOOTH_CONNECT_PERMISSIONS);
-            } else {
-                Log.d(TAG, "#### permissions not requested because of version check");
-            }
-        }
-        if (!(bluetoothGatt == null)) {
-            bluetoothGatt.disconnect();
-        }
-        if (endTestPrematurely) {
-            Log.d(TAG, "### endTest()  endTestPrematurely = true");
-            startActivity(new Intent(SixMWTActivity.this, HomeActivity.class));
-            Log.d(TAG, "### endTest()  END");
-        } else {
-            Log.d(TAG, "### endTest()  endTestPrematurely = false");
-            /*TestInfo testInfo= new TestInfo(preTestValueDyspnea, preTestValueFatigue, preTestBloodPressureSystolic, preTestBloodPressureDiastolic, preTestOxygenSaturation,
-                    postTestValueDyspnea, postTestValueFatigue, postTestBloodPressureSystolic, postTestBloodPressureDiastolic, postTestOxygenSaturation, String.valueOf(totalDistance),
-                    etDistance.getText().toString(), String.valueOf(prepPhaseHRStart), String.valueOf(prepPhaseHREnd), String.valueOf(prepPhaseHRMin), String.valueOf(prepPhaseHRMax), txtDeviceName.getText().toString());
-            testParameters.put("preTestValueDyspnea", preTestValueDyspnea);
-            testParameters.put("preTestValueFatigue", preTestValueFatigue);
-            testParameters.put("preTestBloodPressureSystolic", preTestBloodPressureSystolic);
-            testParameters.put("preTestBloodPressureDiastolic", preTestBloodPressureDiastolic);
-            testParameters.put("preTestOxygenSaturation", preTestOxygenSaturation);
-            testParameters.put("postTestValueDyspnea", postTestValueDyspnea);
-            testParameters.put("postTestValueFatigue", postTestValueFatigue);
-            testParameters.put("postTestBloodPressureSystolic", postTestBloodPressureSystolic);
-            testParameters.put("postTestBloodPressureDiastolic", postTestBloodPressureDiastolic);
-            testParameters.put("postTestOxygenSaturation", postTestOxygenSaturation);
-            testParameters.put("totalDistance", String.valueOf(totalDistance));
-            testParameters.put("userTotalDistance", etDistance.getText().toString());
-            testParameters.put("prepPhaseHRStart", String.valueOf(prepPhaseHRStart));
-            testParameters.put("prepPhaseHREnd", String.valueOf(prepPhaseHREnd));
-            testParameters.put("prepPhaseHRMin", String.valueOf(prepPhaseHRMin));
-            testParameters.put("prepPhaseHRMax", String.valueOf(prepPhaseHRMax));
-            testParameters.put("deviceName", txtDeviceName.getText().toString());*/
-            doHrMap = false;
-            doLocationMap = false;
-            DatabaseReference testsReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests");
-            //testsReference.child(currentUser.getUid()).child(String.valueOf(String.valueOf(testStartMillis))).child("testParameters").setValue(testParameters);
-            testsReference.child(currentUser.getUid()).child(String.valueOf(testStartMillis)).child("testHR").setValue(hrMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "### HR DATA SAVED!!!!!");
-                    } else {
-                        Log.d(TAG, task.getException().getMessage());
-                        //Toast.makeText(SixMWTActivity.this, "HR Data NOT SAVED", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-            testsReference.child(currentUser.getUid()).child(String.valueOf(testStartMillis)).child("testGPS").setValue(locationMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        //Toast.makeText(SixMWTActivity.this, "Location Data Saved", Toast.LENGTH_LONG).show();
-                        Log.d(TAG, "### LOCATION DATA SAVED!!!!!");
-                    } else {
-                        Log.d(TAG, task.getException().getMessage());
-                        //Toast.makeText(SixMWTActivity.this, "Location Data NOT SAVED", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-            /*testsReference.child(currentUser.getUid()).child(String.valueOf(testStartMillis)).child("testParameters").setValue(testInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        //Toast.makeText(SixMWTActivity.this, "Location Data Saved", Toast.LENGTH_LONG).show();
-                        Log.d(TAG, "### PARAMETERS DATA SAVED!!!!!");
-                    } else {
-                        Log.d(TAG, task.getException().getMessage());
-                        //Toast.makeText(SixMWTActivity.this, "Location Data NOT SAVED", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });*/
-            //TestData testData = new TestData(hrMap, locationMap);
-            Intent intent = new Intent(SixMWTActivity.this, TestResultsActivity.class);
-            intent.putExtra("EXTRA_HR_MAP", hrMap);
-            intent.putExtra("EXTRA_TEST_PARAMETERS", testParameters);
-            intent.putExtra("EXTRA_DISTANCE", totalDistance);
-            intent.putExtra("EXTRA_TEST_ID", testStartMillis);
-            if (endTestPrematurely) {
-                intent.putExtra("EXTRA_END_PREMATURELY", "Y");
-            }
-            else {
-                intent.putExtra("EXTRA_END_PREMATURELY", "N");
-            }
-            //intent.putExtra("EXTRA_GPS_MAP", locationMap);
-            startActivity(intent);
-            Log.d(TAG, "### endTest()  END");
-        }
-    }
-
     //@SuppressLint("MissingPermission")
     private void discoverDevices() {
         Log.d(TAG, "discoverDevices: Discovering devices");
@@ -826,9 +602,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     } else {
                         Log.d(TAG, "#### permissions not requested because of version check");
                     }
-                    //Toast.makeText(SixMWTActivity.this, "### Manifest.permission.BLUETOOTH_CONNECT", Toast.LENGTH_LONG).show();
-
-                    //return;
                 }
                 if (bluetoothAdapter.isDiscovering()) {
                     Log.d(TAG, "discoverDevices: isDiscovering");
@@ -991,6 +764,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
                 if (testStartMillis == 0) {
                     testStartMillis = System.currentTimeMillis();
+                    testInfo.setTestTimeInMillis(String.valueOf(testStartMillis));
                     Log.d(TAG, String.valueOf(testStartMillis));
                 } else {
                     millisSinceStart = System.currentTimeMillis() - testStartMillis;
@@ -1008,11 +782,13 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     }
                 }
                 if (getPrepPhaseHRStart) {
-                    prepPhaseHRStart = heartRate;
+                    //prepPhaseHRStart = heartRate;
+                    testInfo.setPrepPhaseHRStart(String.valueOf(heartRate));
                     getPrepPhaseHRStart = false;
                 }
                 if (getPrepPhaseHREnd) {
-                    prepPhaseHREnd = heartRate;
+                    //prepPhaseHREnd = heartRate;
+                    testInfo.setPrepPhaseHREnd(String.valueOf(heartRate));
                     getPrepPhaseHREnd = false;
                 }
                 try {
@@ -1036,7 +812,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         }
     };
 
-    //@SuppressLint("MissingPermission")
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
@@ -1056,6 +831,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         Log.d(TAG, "onItemClick: deviceAddress = " + deviceAddress);
 
         txtDeviceName.setText(deviceName);
+        testInfo.setDeviceName(deviceName);
 
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
             Log.d(TAG, "onItemClick: Pairing with " + deviceName);
@@ -1064,42 +840,20 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
             bluetoothGatt = bluetoothDevice.connectGatt(this,true, bluetoothGattCallback);
         }
-        while(!hrMonitorConnected) {
+        /*if heart rate monitor is selected wait until heart rate data is received*/
+        int waitCount = 0;
+        while(!hrMonitorConnected && waitCount < 120) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            waitCount = waitCount + 1;
+            if (waitCount == 120){
+                Toast.makeText(SixMWTActivity.this, "Device: " + deviceName + " did not start transmitting heart rate data in 2 minutes.\nProceeding to next step.\n If necessary end test prematurely!", Toast.LENGTH_LONG).show();
+            }
         }
-        //else{
-        //    txtDeviceName.setVisibility(View.VISIBLE);
-        //    txtHrValue.setVisibility(View.VISIBLE);
-        //}
         preparePreparationPhase();
-    }
-
-    private void preparePreparationPhase() {
-        btnBTOnOff.setVisibility(View.GONE);
-        btnSkipHRMonitor.setVisibility(View.GONE);
-        btnDiscoverDevices.setVisibility(View.GONE);
-        deviceListView.setVisibility(View.GONE);
-        txtHeaderText.setText("Preparation Phase");
-        txtInfo.setVisibility(View.VISIBLE);
-        txtInfo.setText("During preparation phase please remain seated until timer finishes countdown. " +
-                "Do not perform any unnecessary movements and actions - goal of \"Preparation Phase\" is to " +
-                "determine your resting heart rate.\n\n" +
-                "Getting ready before \"Preparation Phase\" and \"Test Phase\":\n" +
-                "\t1. Comfortable clothing should be worn.\n" +
-                "\t2. Appropriate shoes for walking should be worn.\n" +
-                "\t3. You should use usual walking aids during the test (cane, walker, etc.).\n" +
-                "\t4. Your usual medical regimen should be continued.\n" +
-                "\t5. A light meal is acceptable before early morning or early afternoon tests.\n" +
-                "\t6. You should not have exercised vigorously within 2 hours of beginning the test.");
-        if (hrMonitorSelected) {
-            Toast.makeText(SixMWTActivity.this, "HR Monitor connected", Toast.LENGTH_LONG).show();
-        }
-        btnStartPreparationPhase.setVisibility(View.VISIBLE);
-        btnSkipPreparation.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -1135,28 +889,425 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
     }
 
-    /*@Override
-    public void onLocationChanged(@NonNull List<Location> locations) {
-        LocationListener.super.onLocationChanged(locations);
+    private void testNotification(int i) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //used from API 26
+            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated from API 26
+            vibrator.vibrate(500);
+        }
+        txtTestInfo.setVisibility(View.VISIBLE);
+        if (i == 5) {
+            txtTestInfo.setText("You are doing well!\nYou have 5 minutes togo!");
+        }
+        if (i == 4) {
+            txtTestInfo.setText("Keep up the good work!\nYou have 4 minutes to go!");
+        }
+        if (i == 3) {
+            txtTestInfo.setText("You are doing well!\nYou are halfway done!");
+        }
+        if (i == 2) {
+            txtTestInfo.setText("Keep up the good work!\nYou have only 2 minutes left!");
+        }
+        if (i == 1) {
+            txtTestInfo.setText("You are doing well!\nYou have only 1 minute to go!");
+        }
+        if (i == 0) {
+            txtTestInfo.setText("You did great!\nThis was good effort!");
+        }
     }
 
-    @Override
-    public void onFlushComplete(int requestCode) {
-        LocationListener.super.onFlushComplete(requestCode);
+    private void preparePreparationPhase() {
+        btnBTOnOff.setVisibility(View.GONE);
+        btnSkipHRMonitor.setVisibility(View.GONE);
+        btnDiscoverDevices.setVisibility(View.GONE);
+        deviceListView.setVisibility(View.GONE);
+        txtHeaderText.setText("Preparation Phase");
+        txtInfo.setVisibility(View.VISIBLE);
+        txtInfo.setText("During preparation phase please remain seated until timer finishes countdown. " +
+                "Do not perform any unnecessary movements and actions - goal of \"Preparation Phase\" is to " +
+                "determine your resting heart rate.\n\n" +
+                "Getting ready before \"Preparation Phase\" and \"Test Phase\":\n" +
+                "\t1. Comfortable clothing should be worn.\n" +
+                "\t2. Appropriate shoes for walking should be worn.\n" +
+                "\t3. You should use usual walking aids during the test (cane, walker, etc.).\n" +
+                "\t4. Your usual medical regimen should be continued.\n" +
+                "\t5. A light meal is acceptable before early morning or early afternoon tests.\n" +
+                "\t6. You should not have exercised vigorously within 2 hours of beginning the test.");
+        if (hrMonitorSelected) {
+            Toast.makeText(SixMWTActivity.this, "HR Monitor connected", Toast.LENGTH_LONG).show();
+        }
+        btnStartPreparationPhase.setVisibility(View.VISIBLE);
+        btnSkipPreparation.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        LocationListener.super.onStatusChanged(provider, status, extras);
+    private void startPreparationPhase() {
+        preparationPhase = true;
+        getPrepPhaseHRStart = true;
+        txtInfo.setVisibility(View.GONE);
+        btnStartPreparationPhase.setVisibility(View.GONE);
+        if (hrMonitorConnected) {
+            txtDeviceName.setVisibility(View.VISIBLE);
+            txtHrValue.setVisibility(View.VISIBLE);
+        }
+        txtTimer.setVisibility(View.VISIBLE);
+        btnStartTimer.setVisibility(View.VISIBLE);
+        btnResetTimer.setVisibility(View.INVISIBLE);
+        btnSkipPreparation.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onProviderEnabled(@NonNull String provider) {
-        LocationListener.super.onProviderEnabled(provider);
+
+    private void preTestParameters() {
+        btnStartTimer.setVisibility(View.GONE);
+        btnResetTimer.setVisibility(View.GONE);
+        txtDeviceName.setVisibility(View.GONE);
+        txtHrValue.setVisibility(View.GONE);
+        txtTimer.setVisibility(View.GONE);
+        btnSkipPreparation.setVisibility(View.GONE);
+        if (prepPhaseHRMin == 200) {
+            prepPhaseHRMin = 0;
+        }
+        getPrepPhaseHREnd = true;
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        txtHeaderText.setText("Pre-Test Parameters");
+        txtInfo.setText("Please fill pre-test parameters if you have tools to do the " +
+                "measurements.");
+        txtDyspnea.setVisibility(View.VISIBLE);
+        txtFatigue.setVisibility(View.VISIBLE);
+        spinnerDyspnea.setVisibility(View.VISIBLE);
+        spinnerFatigue.setVisibility(View.VISIBLE);
+        txtBloodPressure.setVisibility(View.VISIBLE);
+        txtOxygenSaturation.setVisibility(View.VISIBLE);
+        layoutBloodPressure.setVisibility(View.VISIBLE);
+        etOxygenSaturation.setVisibility(View.VISIBLE);
+        btnContinue.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
-        LocationListener.super.onProviderDisabled(provider);
-    }*/
+    private void prepareTestPhase() {
+        txtInfo.setVisibility(View.VISIBLE);
+        txtInfo.setText(/*"HRStart: " + prepPhaseHRStart + "\n" +
+                "HREnd: " + prepPhaseHREnd + "\n" +
+                "HRMin: " + prepPhaseHRMin + "\n" +
+                "HRMax: " + prepPhaseHRMax + "\n\n" +*/
+                "The object of this test is to walk as far as possible for 6 minutes. Six " +
+                        "minutes is a long time to walk, so you will be exerting yourself. You will " +
+                        "probably get out of breath or become exhausted. You are permitted to slow " +
+                        "down, to stop, and to rest as necessary. You may lean against the wall or " +
+                        "any other object while rest-ing, but resume walking as soon as you are able.\n\n" +
+                        "You will be walking back and forth around the cones in the hallway. You should " +
+                        "pivot briskly around the cones and continueback the other way without hesitation. " +
+                        "Try turning motion by walking one lap yourself. Walk and pivot around a cone briskly.\n\n" +
+                        "Are you ready to do that? Please use any tool necessary for keeping lap counter if " +
+                        "you are doing laps. Increase count each time you turn around at this starting point. " +
+                        "Remember that the object is to walk AS FAR AS POSSIBLE for 6 minutes, but don’t run or jog.\n\n" +
+                        "Start now, or whenever you are ready by starting Timer and walking the longest distance possible.");
+        preparationPhase = false;
+        txtHeaderText.setText("Test Phase");
+        btnStartTestPhase.setVisibility(View.VISIBLE);
+
+        txtDyspnea.setVisibility(View.GONE);
+        txtFatigue.setVisibility(View.GONE);
+        spinnerDyspnea.setVisibility(View.GONE);
+        spinnerFatigue.setVisibility(View.GONE);
+        txtBloodPressure.setVisibility(View.GONE);
+        txtOxygenSaturation.setVisibility(View.GONE);
+        layoutBloodPressure.setVisibility(View.GONE);
+        etOxygenSaturation.setVisibility(View.GONE);
+        btnContinue.setVisibility(View.GONE);
+    }
+
+    private void startTestPhase() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            txtDistance.setVisibility(View.VISIBLE);
+            saveLocationData = true;
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+            Log.d(TAG, "### ACCESS_FINE_LOCATION granted!!");
+        } else {
+            Log.d(TAG, "### ACCESS_FINE_LOCATION NOT granted!!");
+            //if permissions not granted
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.d(TAG, "### request ACCESS_FINE_LOCATION!!");
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSIONS);
+            }
+        }
+        txtHeaderText.setText("Test Phase");
+        testPhase = true;
+        resetTimer();
+        btnBTOnOff.setVisibility(View.GONE);
+        btnSkipHRMonitor.setVisibility(View.GONE);
+        txtInfo.setVisibility(View.GONE);
+        btnStartTestPhase.setVisibility(View.GONE);
+        if (hrMonitorConnected) {
+            txtDeviceName.setVisibility(View.VISIBLE);
+            txtHrValue.setVisibility(View.VISIBLE);
+        }
+        txtTimer.setVisibility(View.VISIBLE);
+        btnStartTimer.setVisibility(View.VISIBLE);
+        btnResetTimer.setVisibility(View.INVISIBLE);
+    }
+
+    private void endTest() {
+        Log.d(TAG, "### endTest()");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, BLUETOOTH_CONNECT_PERMISSIONS);
+            } else {
+                Log.d(TAG, "#### permissions not requested because of version check");
+            }
+        }
+        if (!(bluetoothGatt == null)) {
+            bluetoothGatt.disconnect();
+        }
+        if (endTestPrematurely) {
+            Log.d(TAG, "### endTest()  endTestPrematurely = true");
+            startActivity(new Intent(SixMWTActivity.this, HomeActivity.class));
+            Log.d(TAG, "### endTest()  END");
+        } else {
+            Log.d(TAG, "### endTest()  endTestPrematurely = false");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
+            testInfo.setTestDateTime(DateFormat.format("dd-MMM-yyyy hh:mm:ss", Long.parseLong(testInfo.getTestTimeInMillis())).toString());
+            testInfo.setPostTestValueDyspnea(valueDyspnea);
+            testInfo.setPostTestValueFatigue(valueFatigue);
+            testInfo.setPostTestBloodPressureSystolic(etBloodPressureSystolic.getText().toString());
+            testInfo.setPostTestBloodPressureDiastolic(etBloodPressureDiastolic.getText().toString());
+            testInfo.setPostTestOxygenSaturation(etOxygenSaturation.getText().toString());
+            doHrMap = false;
+            doLocationMap = false;
+            if (endTestPrematurely) {
+                testInfo.setEndTestPrematurely("Y");
+            }
+            else {
+                testInfo.setEndTestPrematurely("N");
+            }
+            testInfo.setHrMap(hrMap);
+            testInfo.setLocationMap(locationMap);
+            testInfo.setTotalDistance(String.valueOf(totalDistance));
+            testInfo.setUserTotalDistance(etDistance.getText().toString());
+            testInfo.setPrepPhaseHRMin(String.valueOf(prepPhaseHRMin));
+            testInfo.setPrepPhaseHRMax(String.valueOf(prepPhaseHRMax));
+
+            DatabaseReference testsReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests");
+            //testsReference.child(currentUser.getUid()).child(String.valueOf(String.valueOf(testStartMillis))).child("testParameters").setValue(testParameters);
+            testsReference.child(currentUser.getUid()).child(String.valueOf(testStartMillis)).setValue(testInfo).addOnCompleteListener(new OnCompleteListener<Void>() {; //child("testHR").setValue(hrMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "### HR DATA SAVED!!!!!");
+                    } else {
+                        Log.d(TAG, task.getException().getMessage());
+                        //Toast.makeText(SixMWTActivity.this, "HR Data NOT SAVED", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            Intent intent = new Intent(SixMWTActivity.this, TestResultsActivity.class);
+            intent.putExtra("EXTRA_TEST_INFO", testInfo);
+            //intent.putExtra("EXTRA_GPS_MAP", locationMap);
+            startActivity(intent);
+            Log.d(TAG, "### endTest()  END");
+        }
+    }
+
+    private void calculateAdditionalTestDetails() {
+
+        Log.d(TAG, "### calculateAdditionalTestDetails START");
+        final int[] age = new int[1];
+        final int[] maxHR = new int[1];
+        final int[] height = new int[1];
+        final int[] weight = new int[1];
+        final int[] testHRMin = new int[1];
+        final int[] testHRMax = new int[1];
+        final int[] hrBelowZone1 = new int[1];
+        final int[] hrZone1 = new int[1];
+        final int[] hrZone2 = new int[1];
+        final int[] hrZone3 = new int[1];
+        final int[] hrZone4 = new int[1];
+        final int[] hrZone5 = new int[1];
+        final int[] hrAboveZone5 = new int[1];
+        final int[] averageHR = new int[1];
+        final double[] totalDistance = new double[1];
+        final double[] estimatedDistance = new double[1];
+        final String[] gender = new String[1];
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance(dbInstance).getReference("Users").child(currentUser.getUid());
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Log.d(TAG, "###SNAPSHOT: " + dataSnapshot.getKey() + ": " + dataSnapshot.getValue());
+                    if ("gender".equals(dataSnapshot.getKey())) {
+                        if("Male".equals(dataSnapshot.getValue())){
+                            gender[0] = "Male";
+                        }
+                        else if("Female".equals(dataSnapshot.getValue())){
+                            gender[0] = "Female";
+                        }
+                        else{
+                            //Toast.makeText(TestResultsActivity.this, "Error loading Gender value - please mark gender and re-save test parameters", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    if("height".equals(dataSnapshot.getKey())){
+                        height[0] = Integer.valueOf((String) dataSnapshot.getValue());
+                    }
+                    if("weight".equals(dataSnapshot.getKey())){
+                        weight[0] = Integer.valueOf((String) dataSnapshot.getValue());
+                    }
+                    if("birthDate".equals(dataSnapshot.getKey())){
+                        String bd = String.valueOf(dataSnapshot.getValue()).replace(" ", "-");
+                        SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy");
+                        //Date birthDate;
+                        try {
+                            /*translate birth date to calendar object*/
+                            Date birthDate = format.parse(bd);
+                            Log.d(TAG, "birthDate = " + birthDate);
+                            Calendar calBirthDate = Calendar.getInstance();
+                            calBirthDate.setTimeInMillis(birthDate.getTime());
+                            Log.d(TAG, "calBirthDate = " + calBirthDate);
+
+                            /*create calendar object for current day*/
+                            long currentTime = System.currentTimeMillis();
+                            Log.d(TAG, "currentTime = " + currentTime);
+                            Calendar calNow = Calendar.getInstance();
+                            calNow.setTimeInMillis(currentTime);
+                            Log.d(TAG, "calNow = " + calNow);
+                            age[0] = calNow.get(Calendar.YEAR) - calBirthDate.get(Calendar.YEAR);
+                            Log.d(TAG, "age = " + age[0]);
+
+                            /*age value postprocessing*/
+                            int currMonth = calNow.get(Calendar.MONTH) + 1;
+                            int birthMonth = calBirthDate.get(Calendar.MONTH) + 1;
+                            int months = currMonth - birthMonth;
+                            if ((months < 0) || (months == 0 && calNow.get(Calendar.DATE) < calBirthDate.get(Calendar.DATE))){
+                                age[0]--;
+                            }
+                            /*https://journals.lww.com/acsm-msse/Fulltext/2007/05000/Longitudinal_Modeling_of_the_Relationship_between.11.aspx*/
+                            maxHR[0] = (int) (207 - 0.7 * age[0]);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                Set<String> timeKeys = hrMap.keySet();
+                ArrayList<String> listOfTimeKeys = new ArrayList<>(timeKeys);
+                ArrayList<Integer> integerListOfTimeKeys = new ArrayList<>();
+                Collection<String> hrValues = hrMap.values();
+                ArrayList<String> listOfHRValues = new ArrayList<>(hrValues);
+                ArrayList<Integer> integerListOfHRValues = new ArrayList<>();
+                Iterator iterator = listOfHRValues.iterator();
+                int count = 0;
+                int sum = 0;
+                hrBelowZone1[0] = 0;
+                hrZone1[0] = 0;
+                hrZone2[0] = 0;
+                hrZone3[0] = 0;
+                hrZone4[0] = 0;
+                hrZone5[0] = 0;
+                hrAboveZone5[0] = 0;
+                testHRMin[0] = 200;
+                testHRMax[0] = 0;
+                while (iterator.hasNext()) {
+                    int hrValue = Integer.valueOf((String) iterator.next());
+                    integerListOfHRValues.add(hrValue);
+                    count = count + 1;
+                    sum = sum + hrValue;
+                    if (testHRMin[0] > hrValue){
+                        testHRMin[0] = hrValue;
+                    }
+                    if (testHRMax[0] < hrValue){
+                        testHRMax[0] = hrValue;
+                    }
+                    if (hrValue < maxHR[0] * 0.5) {
+                        hrBelowZone1[0] = hrBelowZone1[0] + 1;
+                    }
+                    else if (hrValue >= maxHR[0] * 0.5 && hrValue < maxHR[0] * 0.6 ) {
+                        hrZone1[0] = hrZone1[0] + 1;
+                    }
+                    else if (hrValue >= maxHR[0] * 0.6 && hrValue < maxHR[0] * 0.7 ) {
+                        hrZone2[0] = hrZone2[0] + 1;
+                    }
+                    else if (hrValue >= maxHR[0] * 0.7 && hrValue < maxHR[0] * 0.8 ) {
+                        hrZone3[0] = hrZone3[0] + 1;
+                    }
+                    else if (hrValue >= maxHR[0] * 0.8 && hrValue < maxHR[0] * 0.9 ) {
+                        hrZone3[0] = hrZone4[0] + 1;
+                    }
+                    else if (hrValue >= maxHR[0] * 0.9 && hrValue <= maxHR[0]) {
+                        hrZone5[0] = hrZone5[0] + 1;
+                    }
+                    else if (hrValue > maxHR[0]) {
+                        hrAboveZone5[0] = hrAboveZone5[0] + 1;
+                    }
+                }
+                iterator = listOfTimeKeys.iterator();
+                while (iterator.hasNext()) {
+                    int time = Integer.valueOf((String) iterator.next());
+                    integerListOfTimeKeys.add(time);
+                }
+
+
+                if (count > 0) {
+                    averageHR[0] = (int) (sum / count);
+                    /*use same variables for holding percentage in zones*/
+                    hrBelowZone1[0] = (int) (hrBelowZone1[0] / count * 100);
+                    hrZone1[0] = (int) (hrZone1[0] / count * 100);
+                    hrZone2[0] = (int) (hrZone2[0] / count * 100);
+                    hrZone3[0] = (int) (hrZone3[0] / count * 100);
+                    hrZone4[0] = (int) (hrZone4[0] / count * 100);
+                    hrZone5[0] = (int) (hrZone5[0] / count * 100);
+                    hrAboveZone5[0] = (int) (hrAboveZone5[0] / count * 100);
+                }
+
+                /*https://academic.oup.com/eurjcn/article/8/1/2/5929208*/
+                if (gender[0] == "Female") {
+                    estimatedDistance[0] = (2.11 * height[0]) - (2.29 * weight[0]) - (5.78 * age[0]) + 667;
+                }
+                else if (gender[0] == "Male") {
+                    estimatedDistance[0] = (7.75 * height[0]) - (5.02 * age[0]) - (1.76 * weight[0]) - 309;
+                }
+
+                Log.d(TAG, "" + gender[0]);
+                Log.d(TAG, "" + age[0]);
+                Log.d(TAG, "" + height[0]);
+                Log.d(TAG, "" + weight[0]);
+                Log.d(TAG, "" + hrBelowZone1[0]);
+                Log.d(TAG, "" + hrZone1[0]);
+                Log.d(TAG, "" + hrZone2[0]);
+                Log.d(TAG, "" + hrZone3[0]);
+                Log.d(TAG, "" + hrZone4[0]);
+                Log.d(TAG, "" + hrZone5[0]);
+                Log.d(TAG, "" + hrAboveZone5[0]);
+                Log.d(TAG, "" + estimatedDistance[0]);
+                Log.d(TAG, "" + averageHR[0]);
+                Log.d(TAG, "" + maxHR[0]);
+                Log.d(TAG, "" + testHRMin[0]);
+                Log.d(TAG, "" + testHRMax[0]);
+
+                testInfo.setGender(gender[0]);
+                testInfo.setAge(String.valueOf(age[0]));
+                testInfo.setHeight(String.valueOf(height[0]));
+                testInfo.setWeight(String.valueOf(weight[0]));
+                testInfo.setHrBelowZone1Percent(String.valueOf(hrBelowZone1[0]));
+                testInfo.setHrZone1Percent(String.valueOf(hrZone1[0]));
+                testInfo.setHrZone2Percent(String.valueOf(hrZone2[0]));
+                testInfo.setHrZone3Percent(String.valueOf(hrZone3[0]));
+                testInfo.setHrZone4Percent(String.valueOf(hrZone4[0]));
+                testInfo.setHrZone5Percent(String.valueOf(hrZone5[0]));
+                testInfo.setHrAboveZone5Percent(String.valueOf(hrAboveZone5[0]));
+                testInfo.setEstimatedDistance(String.valueOf(estimatedDistance[0]));
+                testInfo.setTestAverageHR(String.valueOf(averageHR[0]));
+                testInfo.setHrMaxByFormula(String.valueOf(maxHR[0]));
+                testInfo.setTestMinHR(String.valueOf(testHRMin[0]));
+                testInfo.setTestMaxHR(String.valueOf(testHRMax[0]));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }

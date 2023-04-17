@@ -39,7 +39,7 @@ public class TestListAdapter extends ArrayAdapter<TestInfo> {
         else {
             txtTestDistance.setText(testInfo.getTotalDistance());
         }
-        txtTestAverageHR.setText(testInfo.getAverageHR());
+        txtTestAverageHR.setText("testInfo AverageHR"); //(testInfo.getAverageHR());
 
         return super.getView(position, convertView, parent);
     }

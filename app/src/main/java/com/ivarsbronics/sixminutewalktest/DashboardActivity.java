@@ -69,9 +69,9 @@ public class DashboardActivity extends DrawerBaseActivity {
                     if("totalDistance".equals(dataSnapshot.getKey())){
                         testInfo.setTotalDistance((String) dataSnapshot.getValue());
                     }
-                    if("averageHR".equals(dataSnapshot.getKey())){
+                    /*if("averageHR".equals(dataSnapshot.getKey())){
                         testInfo.setAverageHR((String) dataSnapshot.getValue());
-                    }
+                    }*/
                     testInfoArrayList.add(testInfo);
                 }
 
