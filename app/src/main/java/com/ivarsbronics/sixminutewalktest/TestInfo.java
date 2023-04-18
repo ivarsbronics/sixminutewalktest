@@ -48,7 +48,7 @@ public class TestInfo implements Parcelable {
             hrMonitorSkipped
                     ;
     private HashMap<String, String> hrMap = new HashMap();
-    private HashMap<String, LatLng> locationMap = new HashMap();
+    private HashMap<String, LatLngCustom> locationMap = new HashMap();
 
     public TestInfo() {
     }
@@ -385,11 +385,11 @@ public class TestInfo implements Parcelable {
         this.hrMap = hrMap;
     }
 
-    public HashMap<String, LatLng> getLocationMap() {
+    public HashMap<String, LatLngCustom> getLocationMap() {
         return locationMap;
     }
 
-    public void setLocationMap(HashMap<String, LatLng> locationMap) {
+    public void setLocationMap(HashMap<String, LatLngCustom> locationMap) {
         this.locationMap = locationMap;
     }
 

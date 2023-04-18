@@ -32,19 +32,28 @@
         android:id="@+id/txtTestVersionTerms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="2dp"
         android:background="@android:drawable/editbox_background"
-        android:text="This application is in TESTING PHASE as part of Master's Thesis.\n
+        android:text="
+This mobile application is in TESTING PHASE as part of Master's Thesis.\n\n
+Your use of any aspect of this mobile application is at your own risk. You must consult with
+healthcare providers and make your medical decisions based on advice of healthcare provider.\n
+This mobile application is not providing any medical advice of any kind. This mobile
+application development team cannot accept any liability for any actions you take based
+on content available in this mobile application. Any actions you take based on content
+of this mobile application are taken at your sole risk.\n\n
 Please use fake/not-existing e-mail address for registration - no e-mail verification is
 performed in TESTING PHASE.\n
 This application gathers and uses set of parameters (provided by user), location data (gathered
 from your phone GPS) and heart rate data (gathered from Bluetooth Heart Rate monitor supporting
-Bluetooth standard for heart rate measurement) to perform evaluation of '6 Minute Walk Test'. By
-installing TEST VERSION of this application and registering you agree to gathering and processing
-of information mentioned above.\n
+Bluetooth standard for heart rate measurement) to perform evaluation of '6 Minute Walk Test'.\n\n
+By installing TEST VERSION of this application and registering you agree to gathering and processing
+of information mentioned above.\n\n
 After TESTING PHASE all user data that is gathered and used by application will be
-deleted. After data deletion none of previously registered users will be able to log into application."
+deleted. After data deletion none of previously registered users will be able to log into
+application."
         android:textColor="@color/black"
-        android:textSize="16dp"
+        android:textSize="12dp"
         android:layout_marginTop="1dp"
         android:layout_below="@+id/txtTermsOfUseAndDisclaimer"/>
 
@@ -134,6 +143,7 @@ deleted. After data deletion none of previously registered users will be able to
         android:text="Have an Account? Log In!"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/btnTermsApproval"
+        android:textColor="@color/black"
         android:layout_marginTop="5dp"/>
 
 </RelativeLayout>

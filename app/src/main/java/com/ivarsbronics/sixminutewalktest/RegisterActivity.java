@@ -18,7 +18,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -120,7 +119,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     //currentUser.updateProfile(profileChangeRequest);
 
                                     UserInfo userInfo = new UserInfo(null, null, null, null);
-                                    //UserInfo userInfo = new UserInfo(age, height, gender, weight);
 
                                     // get database user reference
                                     DatabaseReference usersReference = FirebaseDatabase.getInstance(dbInstance).getReference("Users");
@@ -128,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-                                                // send verification e-mail
+                                                // send verification e-mail - not enabled in test version
                                                 //currentUser.sendEmailVerification();
                                                 //Toast.makeText(RegisterActivity.this, "Registration Successful! Please Verify Your e-mail!" , Toast.LENGTH_LONG).show();
 

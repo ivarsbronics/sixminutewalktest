@@ -63,8 +63,7 @@
         </activity>
         <activity
             android:name=".SixMWTActivity"
-            android:exported="false"
-            android:noHistory="true">
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

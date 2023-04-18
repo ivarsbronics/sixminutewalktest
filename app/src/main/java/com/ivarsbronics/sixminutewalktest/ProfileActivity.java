@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,7 +24,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ivarsbronics.sixminutewalktest.databinding.ActivityProfileBinding;
-
 import java.lang.reflect.Field;
 import java.util.Calendar;
 
@@ -60,7 +58,6 @@ public class ProfileActivity extends DrawerBaseActivity {
         
         btnDatePicker = findViewById(R.id.btnDatePicker);
         btnDatePicker.setText(getTodaysDate());
-        //txtGender = findViewById(R.id.txtGender);
         radioGroup = findViewById(R.id.rgGender);
         etxtHeight = findViewById(R.id.etxtHeight);
         etxtWeight = findViewById(R.id.etxtWeight);
@@ -75,14 +72,10 @@ public class ProfileActivity extends DrawerBaseActivity {
                     Log.d(TAG, "###SNAPSHOT: " + dataSnapshot.getKey() + ": " + dataSnapshot.getValue());
                     if ("gender".equals(dataSnapshot.getKey())) {
                         if("Male".equals(dataSnapshot.getValue())){
-                            //RadioButton rb = findViewById(R.id.rbMale);
-                            //rb.setChecked(true);
                             radioGroup.check(R.id.rbMale);
                             genderChoice = "Male";
                         }
                         else if("Female".equals(dataSnapshot.getValue())){
-                            //RadioButton rb = findViewById(R.id.rbFemale);
-                            //rb.setChecked(true);
                             radioGroup.check(R.id.rbFemale);
                             genderChoice = "Female";
                         }
@@ -119,20 +112,6 @@ public class ProfileActivity extends DrawerBaseActivity {
 
             }
         });
-
-        /*FirebaseDatabase.getInstance(dbInstance).getReference("Users").child(currentUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, String.valueOf(task.getResult().getValue()));
-                    DataSnapshot userInfo = task.getResult();
-                    Log.d(TAG, String.valueOf(userInfo));
-                }
-                else{
-                    Log.d(TAG, "Error reading data: " + task.getException());
-                }
-            }
-        });*/
         
         btnDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,12 +125,9 @@ public class ProfileActivity extends DrawerBaseActivity {
             public void onClick(View view) {
                 int radioButtonId = radioGroup.getCheckedRadioButtonId();
                 if (radioButtonId == -1){
-                    //txtGender.setError("Gender must be selected");
-                    //txtGender.requestFocus();
                     AlertDialog.Builder alertDialog  = new AlertDialog.Builder(ProfileActivity.this);
                     alertDialog.setTitle(" ");
-                    //alertDialog.setIcon(R.drawable.wrong);
-                    alertDialog.setMessage("Please select gender that fits you the most!\nOtherwise test feedback will not be accurate!");
+                    alertDialog.setMessage("Please select the gender that fits your the most!\nApplication uses formulas published in scientific publications!\nThe more accurate values are selected - the more accurate estimated values will be provided.");
                     alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog,int which) {
                         }
@@ -169,7 +145,7 @@ public class ProfileActivity extends DrawerBaseActivity {
         String birthDate = String.valueOf(btnDatePicker.getText());
         String height = String.valueOf(etxtHeight.getText());
         String weight = String.valueOf(etxtWeight.getText());
-        String gender = genderChoice; //String.valueOf(radioGroup.getCheckedRadioButtonId());
+        String gender = genderChoice;
         UserInfo userInfo = new UserInfo(birthDate, height, gender, weight);
 
         DatabaseReference usersReference = FirebaseDatabase.getInstance(dbInstance).getReference("Users");
@@ -184,7 +160,6 @@ public class ProfileActivity extends DrawerBaseActivity {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-            System.out.printf("%s: %s%n", name, value);
         }
         FirebaseUser currentUser = mAuth.getCurrentUser();
         usersReference.child(currentUser.getUid()).setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -192,12 +167,6 @@ public class ProfileActivity extends DrawerBaseActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(ProfileActivity.this, "Parameters Saved Successful!", Toast.LENGTH_SHORT).show();
-
-                    //Intent intent = new Intent(ProfileActivity.this, HomeActivity.class);
-                    // makes sure that getting to previous activity is not possible, i.e., back button does not return to RegisterActivity
-                    // makes sure that only one HomeActivity instance is available - reusing existing instance or creating new
-                    //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    //startActivity(intent);
                 }
                 else{
                     Log.d(TAG, task.getException().getMessage());
@@ -345,7 +314,6 @@ public class ProfileActivity extends DrawerBaseActivity {
         }
 
         //in case of unexpected text return -1
-
         Log.d(TAG, "" + month);
         return -1;
     }
@@ -353,6 +321,4 @@ public class ProfileActivity extends DrawerBaseActivity {
     private void openDatePicker() {
         datePickerDialog.show();
     }
-
-
 }

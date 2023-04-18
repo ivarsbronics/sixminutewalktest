@@ -30,9 +30,7 @@ import android.os.CountDownTimer;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.format.DateFormat;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -44,12 +42,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,18 +53,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.SphericalUtil;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -101,7 +91,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
     /*current user variable*/
     private FirebaseUser currentUser;
 
-    /*parameters for interactions with layout components*/
+    /*variables for interactions with layout components*/
     private Button btnBTOnOff, btnSkipHRMonitor, btnDiscoverDevices, btnStartTimer, btnResetTimer,
             btnEndTest, btnStartPreparationPhase, btnStartTestPhase, btnEndTestPrematurely,
             btnUpdateTestParameters, btnProceedToTest, btnSkipPreparation, btnContinue;
@@ -111,8 +101,9 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             txtDyspnea, txtFatigue, txtBloodPressure, txtOxygenSaturation, txtDistance;
     private Spinner spinnerDyspnea, spinnerFatigue;
 
+    /*variables for logic support*/
     private HashMap<String, String> hrMap = new HashMap();
-    private HashMap<String, LatLng> locationMap = new HashMap();
+    private HashMap<String, LatLngCustom> locationMap = new HashMap();
     private HashMap<String, String> testParameters = new HashMap();
 
     private TestInfo testInfo = new TestInfo();
@@ -145,10 +136,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
     public ArrayList<BluetoothDevice> btDeviceArrayList = new ArrayList<>();
     private ListView deviceListView;
 
-    private String valueFatigue, valueDyspnea, preTestValueDyspnea, preTestValueFatigue,
-            preTestBloodPressureSystolic, preTestBloodPressureDiastolic, preTestOxygenSaturation,
-            postTestValueDyspnea, postTestValueFatigue, postTestBloodPressureSystolic,
-            postTestBloodPressureDiastolic, postTestOxygenSaturation;
+    private String valueFatigue, valueDyspnea;
 
     BluetoothAdapter bluetoothAdapter;
     BluetoothDevice bluetoothDevice;
@@ -545,7 +533,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         //super.onBackPressed();
     }
 
-    //@SuppressLint("MissingPermission")
     public void bluetoothOnOff() {
         if (bluetoothAdapter == null) {
             Toast.makeText(SixMWTActivity.this, "Bluetooth adapter not available on this device", Toast.LENGTH_LONG).show();
@@ -567,15 +554,13 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             startActivity(enableBTIntent);
 
             IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            //registerReceiver(broadcastReceiver1, BTIntent);
-            //Toast.makeText(SixMWTActivity.this, "Bluetooth adapter enabled!", Toast.LENGTH_LONG).show();
 
         }
         if (bluetoothAdapter.isEnabled()) {
+            /*set android device discoverable for 60 seconds*/
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 60); //set discoverable for 60 sec
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 60);
             startActivity(discoverableIntent);
-            //Toast.makeText(SixMWTActivity.this, "Device Discoverable for 60 seconds", Toast.LENGTH_LONG).show();
         }
 
         btnBTOnOff.setVisibility(View.GONE);
@@ -583,7 +568,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         btnDiscoverDevices.setVisibility(View.VISIBLE);
     }
 
-    //@SuppressLint("MissingPermission")
     private void discoverDevices() {
         Log.d(TAG, "discoverDevices: Discovering devices");
 
@@ -664,6 +648,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         }
     }
 
+    /*method for communication with bluetooth device*/
     BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -737,16 +722,8 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
 
-            //Log.d(TAG, "### onCharacteristicChanged");
-            //@SuppressLint("MissingPermission")
-            //boolean b = gatt.readCharacteristic(characteristic);
-            //Log.d(TAG, "### onCharacteristicChanged: read characteristic " + b);
-            //if (status == BluetoothGatt.GATT_SUCCESS) {
-            //Log.d(TAG, "### bluetoothGattCallback: onCharacteristicRead: status == BluetoothGatt.GATT_SUCCESS");
             if (HEART_RATE_MEASUREMENT.equals(characteristic.getUuid())) {
-                /*if (!hrMonitorSelected) {
-                    hrMonitorSelected = true;
-                }*/
+                /*if device has heart rate measurement characteristic set device connected*/
                 if (!hrMonitorConnected) {
                     hrMonitorConnected = true;
                 }
@@ -784,12 +761,10 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     }
                 }
                 if (getPrepPhaseHRStart) {
-                    //prepPhaseHRStart = heartRate;
                     testInfo.setPrepPhaseHRStart(String.valueOf(heartRate));
                     getPrepPhaseHRStart = false;
                 }
                 if (getPrepPhaseHREnd) {
-                    //prepPhaseHREnd = heartRate;
                     testInfo.setPrepPhaseHREnd(String.valueOf(heartRate));
                     getPrepPhaseHREnd = false;
                 }
@@ -799,7 +774,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     e.printStackTrace();
                 }
             }
-            //}
 
         }
 
@@ -879,7 +853,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                           "Longitude: " + String.valueOf(longitude) + "\n";
             if (testStartMillis != 0 && doLocationMap){
                 long locationMillisSinceStart = System.currentTimeMillis() - testStartMillis;
-                locationMap.put(String.valueOf(locationMillisSinceStart), new LatLng(latitude, longitude));
+                locationMap.put(String.valueOf(locationMillisSinceStart), new LatLngCustom(latitude, longitude));
             }
 
             txtDistance.setText("Distance:\n" + String.valueOf(totalDistance) + " m"); // + "\n" + String.valueOf(totalDistance1));
@@ -1001,9 +975,11 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                         "probably get out of breath or become exhausted. You are permitted to slow " +
                         "down, to stop, and to rest as necessary. You may lean against the wall or " +
                         "any other object while rest-ing, but resume walking as soon as you are able.\n\n" +
-                        "You will be walking back and forth around the cones in the hallway. You should " +
-                        "pivot briskly around the cones and continueback the other way without hesitation. " +
+                        "If You will be walking back and forth around the cones in the hallway: You should " +
+                        "pivot briskly around the cones and continue back the other way without hesitation. " +
                         "Try turning motion by walking one lap yourself. Walk and pivot around a cone briskly.\n\n" +
+                        "Application will try to track distance using GPS location of device - after test " +
+                        "You will be able to adjust proposed distance if you are using more precise distance measurement.\n\n" +
                         "Are you ready to do that? Please use any tool necessary for keeping lap counter if " +
                         "you are doing laps. Increase count each time you turn around at this starting point. " +
                         "Remember that the object is to walk AS FAR AS POSSIBLE for 6 minutes, but don’t run or jog.\n\n" +
@@ -1195,10 +1171,10 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
                 Set<String> timeKeys = hrMap.keySet();
                 ArrayList<String> listOfTimeKeys = new ArrayList<>(timeKeys);
-                ArrayList<Integer> integerListOfTimeKeys = new ArrayList<>();
+                //ArrayList<Integer> integerListOfTimeKeys = new ArrayList<>();
                 Collection<String> hrValues = hrMap.values();
                 ArrayList<String> listOfHRValues = new ArrayList<>(hrValues);
-                ArrayList<Integer> integerListOfHRValues = new ArrayList<>();
+                //ArrayList<Integer> integerListOfHRValues = new ArrayList<>();
                 Iterator iterator = listOfHRValues.iterator();
                 int count = 0;
                 int sum = 0;
@@ -1213,7 +1189,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                 testHRMax[0] = 0;
                 while (iterator.hasNext()) {
                     int hrValue = Integer.valueOf((String) iterator.next());
-                    integerListOfHRValues.add(hrValue);
+                    //integerListOfHRValues.add(hrValue);
                     count = count + 1;
                     sum = sum + hrValue;
                     if (testHRMin[0] > hrValue){
@@ -1244,11 +1220,22 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                         hrAboveZone5[0] = hrAboveZone5[0] + 1;
                     }
                 }
-                iterator = listOfTimeKeys.iterator();
+                /*iterator = listOfTimeKeys.iterator();
                 while (iterator.hasNext()) {
                     int time = Integer.valueOf((String) iterator.next());
                     integerListOfTimeKeys.add(time);
-                }
+                }*/
+
+                Log.d(TAG, "##### HEART RATE ZONES COUNT BEFORE");
+                Log.d(TAG, "hrBelowZone1 " + hrBelowZone1[0]);
+                Log.d(TAG, "hrZone1 " + hrZone1[0]);
+                Log.d(TAG, "hrZone2 " + hrZone2[0]);
+                Log.d(TAG, "hrZone3 " + hrZone3[0]);
+                Log.d(TAG, "hrZone4 " + hrZone4[0]);
+                Log.d(TAG, "hrZone5 " + hrZone5[0]);
+                Log.d(TAG, "hrAboveZone5 " + hrAboveZone5[0]);
+                Log.d(TAG, "count " + count);
+                Log.d(TAG, "sum " + sum);
 
 
                 if (count > 0) {
@@ -1262,6 +1249,17 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     hrZone5[0] = (int) (hrZone5[0] / count * 100);
                     hrAboveZone5[0] = (int) (hrAboveZone5[0] / count * 100);
                 }
+
+                Log.d(TAG, "##### HEART RATE ZONES COUNT AFTER");
+                Log.d(TAG, "hrBelowZone1 " + hrBelowZone1[0]);
+                Log.d(TAG, "hrZone1 " + hrZone1[0]);
+                Log.d(TAG, "hrZone2 " + hrZone2[0]);
+                Log.d(TAG, "hrZone3 " + hrZone3[0]);
+                Log.d(TAG, "hrZone4 " + hrZone4[0]);
+                Log.d(TAG, "hrZone5 " + hrZone5[0]);
+                Log.d(TAG, "hrAboveZone5 " + hrAboveZone5[0]);
+                Log.d(TAG, "count " + count);
+                Log.d(TAG, "sum " + sum);
 
                 /*https://academic.oup.com/eurjcn/article/8/1/2/5929208*/
                 if (gender[0] == "Female") {
