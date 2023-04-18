@@ -295,6 +295,8 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             public void onClick(View view) {
                 hrMonitorSelected = false;
                 testInfo.setHrMonitorSkipped("Y");
+                testStartMillis = System.currentTimeMillis();
+                testInfo.setTestTimeInMillis(String.valueOf(testStartMillis));
                 preparePreparationPhase();
             }
         });
@@ -880,7 +882,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                 locationMap.put(String.valueOf(locationMillisSinceStart), new LatLng(latitude, longitude));
             }
 
-            txtDistance.setText(String.valueOf(totalDistance) + "\n" + String.valueOf(totalDistance1));
+            txtDistance.setText("Distance:\n" + String.valueOf(totalDistance) + " m"); // + "\n" + String.valueOf(totalDistance1));
             prevLocation = location;
         }
         else {
@@ -1070,7 +1072,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         } else {
             Log.d(TAG, "### endTest()  endTestPrematurely = false");
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
-            testInfo.setTestDateTime(DateFormat.format("dd-MMM-yyyy hh:mm:ss", Long.parseLong(testInfo.getTestTimeInMillis())).toString());
+            testInfo.setTestDateTime(DateFormat.format("dd-MMM-yyyy HH:mm:ss", Long.parseLong(testInfo.getTestTimeInMillis())).toString());
             testInfo.setPostTestValueDyspnea(valueDyspnea);
             testInfo.setPostTestValueFatigue(valueFatigue);
             testInfo.setPostTestBloodPressureSystolic(etBloodPressureSystolic.getText().toString());

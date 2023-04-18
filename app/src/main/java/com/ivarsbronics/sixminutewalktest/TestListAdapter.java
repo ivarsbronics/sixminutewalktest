@@ -34,13 +34,13 @@ public class TestListAdapter extends ArrayAdapter<TestInfo> {
 
         txtTestDateTime.setText(testInfo.getTestDateTime());
         if (testInfo.getUserTotalDistance() != "-") {
-            txtTestDistance.setText(testInfo.getUserTotalDistance());
+            txtTestDistance.setText("Distance: " + testInfo.getUserTotalDistance() + " m");
         }
         else {
-            txtTestDistance.setText(testInfo.getTotalDistance());
+            txtTestDistance.setText("Distance: " + testInfo.getTotalDistance() + " m");
         }
-        txtTestAverageHR.setText("testInfo AverageHR"); //(testInfo.getAverageHR());
+        txtTestAverageHR.setText("HR (average): " + testInfo.getTestAverageHR() + " pbm"); //(testInfo.getAverageHR());
 
-        return super.getView(position, convertView, parent);
+        return convertView; //super.getView(position, convertView, parent);
     }
 }

@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,10 +38,12 @@ public class DashboardActivity extends DrawerBaseActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
-    private String userTotalDistance, totalDistance;
+    private TextView txtInfo;
 
     private ArrayList<TestInfo> testInfoArrayList = new ArrayList<>();
     private TestListAdapter testListAdapter;
+
+    private int testCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,40 +56,36 @@ public class DashboardActivity extends DrawerBaseActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        DatabaseReference userTestsReference = FirebaseDatabase.getInstance(dbInstance).getReference("Tests").child(currentUser.getUid());
+        txtInfo = findViewById(R.id.txtInfo);
+
+        DatabaseReference userTestsReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests").child(currentUser.getUid());
         userTestsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                testInfoArrayList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    TestInfo testInfo = new TestInfo();
-                    Log.d(TAG, "###SNAPSHOT: " + dataSnapshot.getKey() + ": " + dataSnapshot.getValue());
-                    if ("testDateTime".equals(dataSnapshot.getKey())) {
-                        testInfo.setTestDateTime((String) dataSnapshot.getValue());
-                    }
-                    if("userTotalDistance".equals(dataSnapshot.getKey())){
-                        testInfo.setUserTotalDistance((String) dataSnapshot.getValue());
-                    }
-                    if("totalDistance".equals(dataSnapshot.getKey())){
-                        testInfo.setTotalDistance((String) dataSnapshot.getValue());
-                    }
-                    /*if("averageHR".equals(dataSnapshot.getKey())){
-                        testInfo.setAverageHR((String) dataSnapshot.getValue());
-                    }*/
+                    TestInfo testInfo = dataSnapshot.getValue(TestInfo.class);
                     testInfoArrayList.add(testInfo);
+                    testCount++;
                 }
 
-                testListAdapter = new TestListAdapter(DashboardActivity.this, testInfoArrayList);
-                activityDashboardBinding.testsListView.setAdapter(testListAdapter);
+                if (testCount > 0) {
+                    testListAdapter = new TestListAdapter(DashboardActivity.this, testInfoArrayList);
+                    activityDashboardBinding.testsListView.setAdapter(testListAdapter);
 
-                activityDashboardBinding.testsListView.setClickable(true);
-                activityDashboardBinding.testsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        //Intent intent = new Intent(DashboardActivity.this, TestInfoActivity.class);
-                        //intent.putExtra("EXTRA_TEST_ID", testID);
-                        //startActivity(intent);
-                    }
-                });
+                    activityDashboardBinding.testsListView.setClickable(true);
+                    activityDashboardBinding.testsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            Intent intent = new Intent(DashboardActivity.this, TestInfoActivity.class);
+                            intent.putExtra("EXTRA_TEST_INFO", testInfoArrayList.get(i));
+                            startActivity(intent);
+                        }
+                    });
+                }
+                else {
+                    txtInfo.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override

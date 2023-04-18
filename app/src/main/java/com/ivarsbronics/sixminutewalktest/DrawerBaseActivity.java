@@ -8,17 +8,26 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class DrawerBaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    /*authentication variable*/
+    private FirebaseAuth mAuth;
+    /*current user variable*/
+    private FirebaseUser currentUser;
+    /*variable for drawer menu*/
     DrawerLayout drawerLayout;
 
     @Override
@@ -28,6 +37,9 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         container.addView(view);
         super.setContentView(drawerLayout);
 
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
         Toolbar toolbar = drawerLayout.findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -35,6 +47,9 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
 
         NavigationView navigationView = drawerLayout.findViewById(R.id.nav_view);
+        View header = navigationView.getHeaderView(0);
+        TextView userEmail = (TextView) header.findViewById(R.id.userEmail);
+        userEmail.setText(currentUser.getEmail());
         navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.menu_drawer_open, R.string.menu_drawer_closed);
@@ -49,12 +64,12 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
                 overridePendingTransition(0,0);
                 break;
 
-            /*case R.id.navDashboard:
+            case R.id.navDashboard:
                 startActivity(new Intent(this, DashboardActivity.class));
                 overridePendingTransition(0,0);
                 break;
 
-            case R.id.navThird:
+            /*case R.id.navThird:
                 startActivity(new Intent(this, SixMWTActivity.class));
                 overridePendingTransition(0,0);
                 break;

@@ -26,6 +26,13 @@
         android:theme="@style/Theme.SixMinuteWalkTest"
         tools:targetApi="31">
         <activity
+            android:name=".TestInfoActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".TestResultsActivity"
             android:exported="false"
             android:noHistory="true">

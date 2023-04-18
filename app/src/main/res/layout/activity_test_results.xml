@@ -34,14 +34,4 @@
         android:background="@android:drawable/editbox_background"
         />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/saveAdditionalInfo"
-        android:layout_below="@+id/txtTestInfo"
-        android:layout_margin="5dp"
-        android:text="Save Additional Info and Finish Test"
-        android:visibility="gone"
-        />
-
 </RelativeLayout>

@@ -213,7 +213,7 @@
         android:id="@+id/txtDistance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="Wait for distance value - then Start timer!"
         android:layout_below="@+id/txtTestInfo"
         android:layout_margin="10dp"
         android:textColor="@color/black"

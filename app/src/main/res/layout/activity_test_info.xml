@@ -4,23 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DashboardActivity">
+    tools:context=".TestInfoActivity">
 
     <TextView
         android:id="@+id/txtHeaderText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:gravity="center"
-        android:text="Test History"
+        android:text="Test Details"
         android:textColor="@color/black"
         android:textSize="35dp" />
 
     <TextView
-        android:id="@+id/txtInfo"
+        android:id="@+id/txtTestInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtHeaderText"
@@ -28,19 +28,10 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:text="Test history is empty!"
+        android:text=" "
         android:textColor="@color/black"
-        android:gravity="center"
-        android:background="@android:drawable/editbox_background"
         android:textSize="14dp"
-        android:visibility="gone"/>
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/testsListView"
-        tools:listitem="@layout/test_list_item"
-        android:layout_below="@+id/txtInfo"
+        android:background="@android:drawable/editbox_background"
         />
 
 </RelativeLayout>
