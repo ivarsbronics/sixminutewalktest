@@ -53,6 +53,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.SphericalUtil;
+
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -143,6 +145,8 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
     BluetoothGatt bluetoothGatt;
 
     public DeviceListAdapter deviceListAdapter;
+
+    private DecimalFormat df = new DecimalFormat("#0.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -841,22 +845,18 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             else {
                 if (doLocationMap) {
                     double distance = SphericalUtil.computeDistanceBetween(new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()), new LatLng(location.getLatitude(), location.getLongitude()));
-                    float[] results = new float[3];
-                    Location.distanceBetween(prevLocation.getLatitude(), prevLocation.getLongitude(), location.getLatitude(), location.getLongitude(), results);
                     totalDistance = totalDistance + distance;
-                    totalDistance1 = totalDistance1 + results[0];
+                    df.format(totalDistance);
                 }
             }
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            String text = "Latitude: " + String.valueOf(latitude) + "\n" +
-                          "Longitude: " + String.valueOf(longitude) + "\n";
             if (testStartMillis != 0 && doLocationMap){
                 long locationMillisSinceStart = System.currentTimeMillis() - testStartMillis;
                 locationMap.put(String.valueOf(locationMillisSinceStart), new LatLngCustom(latitude, longitude));
             }
 
-            txtDistance.setText("Distance:\n" + String.valueOf(totalDistance) + " m"); // + "\n" + String.valueOf(totalDistance1));
+            txtDistance.setText("Distance:\n" + String.valueOf(df.format(totalDistance)));
             prevLocation = location;
         }
         else {
@@ -1064,14 +1064,13 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             }
             testInfo.setHrMap(hrMap);
             testInfo.setLocationMap(locationMap);
-            testInfo.setTotalDistance(String.valueOf(totalDistance));
+            testInfo.setTotalDistance(String.valueOf(df.format(totalDistance)));
             testInfo.setUserTotalDistance(etDistance.getText().toString());
             testInfo.setPrepPhaseHRMin(String.valueOf(prepPhaseHRMin));
             testInfo.setPrepPhaseHRMax(String.valueOf(prepPhaseHRMax));
 
             DatabaseReference testsReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests");
-            //testsReference.child(currentUser.getUid()).child(String.valueOf(String.valueOf(testStartMillis))).child("testParameters").setValue(testParameters);
-            testsReference.child(currentUser.getUid()).child(String.valueOf(testStartMillis)).setValue(testInfo).addOnCompleteListener(new OnCompleteListener<Void>() {; //child("testHR").setValue(hrMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            testsReference.child(currentUser.getUid()).child(String.valueOf(testStartMillis)).setValue(testInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
@@ -1094,7 +1093,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
         Log.d(TAG, "### calculateAdditionalTestDetails START");
         final int[] age = new int[1];
-        final int[] maxHR = new int[1];
+        final double[] maxHR = new double[1];
         final int[] height = new int[1];
         final int[] weight = new int[1];
         final int[] testHRMin = new int[1];
@@ -1106,8 +1105,14 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         final int[] hrZone4 = new int[1];
         final int[] hrZone5 = new int[1];
         final int[] hrAboveZone5 = new int[1];
+        final double[] hrBelowZone1Percent = new double[1];
+        final double[] hrZone1Percent = new double[1];
+        final double[] hrZone2Percent = new double[1];
+        final double[] hrZone3Percent = new double[1];
+        final double[] hrZone4Percent = new double[1];
+        final double[] hrZone5Percent = new double[1];
+        final double[] hrAboveZone5Percent = new double[1];
         final int[] averageHR = new int[1];
-        final double[] totalDistance = new double[1];
         final double[] estimatedDistance = new double[1];
         final String[] gender = new String[1];
         DatabaseReference databaseReference = FirebaseDatabase.getInstance(dbInstance).getReference("Users").child(currentUser.getUid());
@@ -1162,7 +1167,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                                 age[0]--;
                             }
                             /*https://journals.lww.com/acsm-msse/Fulltext/2007/05000/Longitudinal_Modeling_of_the_Relationship_between.11.aspx*/
-                            maxHR[0] = (int) (207 - 0.7 * age[0]);
+                            maxHR[0] = (double) (207 - 0.7 * age[0]);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
@@ -1189,7 +1194,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                 testHRMax[0] = 0;
                 while (iterator.hasNext()) {
                     int hrValue = Integer.valueOf((String) iterator.next());
-                    //integerListOfHRValues.add(hrValue);
                     count = count + 1;
                     sum = sum + hrValue;
                     if (testHRMin[0] > hrValue){
@@ -1220,46 +1224,17 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                         hrAboveZone5[0] = hrAboveZone5[0] + 1;
                     }
                 }
-                /*iterator = listOfTimeKeys.iterator();
-                while (iterator.hasNext()) {
-                    int time = Integer.valueOf((String) iterator.next());
-                    integerListOfTimeKeys.add(time);
-                }*/
-
-                Log.d(TAG, "##### HEART RATE ZONES COUNT BEFORE");
-                Log.d(TAG, "hrBelowZone1 " + hrBelowZone1[0]);
-                Log.d(TAG, "hrZone1 " + hrZone1[0]);
-                Log.d(TAG, "hrZone2 " + hrZone2[0]);
-                Log.d(TAG, "hrZone3 " + hrZone3[0]);
-                Log.d(TAG, "hrZone4 " + hrZone4[0]);
-                Log.d(TAG, "hrZone5 " + hrZone5[0]);
-                Log.d(TAG, "hrAboveZone5 " + hrAboveZone5[0]);
-                Log.d(TAG, "count " + count);
-                Log.d(TAG, "sum " + sum);
-
 
                 if (count > 0) {
                     averageHR[0] = (int) (sum / count);
-                    /*use same variables for holding percentage in zones*/
-                    hrBelowZone1[0] = (int) (hrBelowZone1[0] / count * 100);
-                    hrZone1[0] = (int) (hrZone1[0] / count * 100);
-                    hrZone2[0] = (int) (hrZone2[0] / count * 100);
-                    hrZone3[0] = (int) (hrZone3[0] / count * 100);
-                    hrZone4[0] = (int) (hrZone4[0] / count * 100);
-                    hrZone5[0] = (int) (hrZone5[0] / count * 100);
-                    hrAboveZone5[0] = (int) (hrAboveZone5[0] / count * 100);
+                    hrBelowZone1Percent[0] = (double)((int) ((double)hrBelowZone1[0] / (double)count * 10000))/100;
+                    hrZone1Percent[0] = (double)((int) ((double)hrZone1[0] / (double)count * 10000))/100;
+                    hrZone2Percent[0] = (double)((int) ((double)hrZone2[0] / (double)count * 10000))/100;
+                    hrZone3Percent[0] = (double)((int) ((double)hrZone3[0] / (double)count * 10000))/100;
+                    hrZone4Percent[0] = (double)((int) ((double)hrZone4[0] / (double)count * 10000))/100;
+                    hrZone5Percent[0] = (double)((int) ((double)hrZone5[0] / (double)count * 10000))/100;
+                    hrAboveZone5Percent[0] = (double)((int) ((double)hrAboveZone5[0] / (double)count * 10000))/100;
                 }
-
-                Log.d(TAG, "##### HEART RATE ZONES COUNT AFTER");
-                Log.d(TAG, "hrBelowZone1 " + hrBelowZone1[0]);
-                Log.d(TAG, "hrZone1 " + hrZone1[0]);
-                Log.d(TAG, "hrZone2 " + hrZone2[0]);
-                Log.d(TAG, "hrZone3 " + hrZone3[0]);
-                Log.d(TAG, "hrZone4 " + hrZone4[0]);
-                Log.d(TAG, "hrZone5 " + hrZone5[0]);
-                Log.d(TAG, "hrAboveZone5 " + hrAboveZone5[0]);
-                Log.d(TAG, "count " + count);
-                Log.d(TAG, "sum " + sum);
 
                 /*https://academic.oup.com/eurjcn/article/8/1/2/5929208*/
                 if (gender[0] == "Female") {
@@ -1269,34 +1244,17 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     estimatedDistance[0] = (7.75 * height[0]) - (5.02 * age[0]) - (1.76 * weight[0]) - 309;
                 }
 
-                Log.d(TAG, "" + gender[0]);
-                Log.d(TAG, "" + age[0]);
-                Log.d(TAG, "" + height[0]);
-                Log.d(TAG, "" + weight[0]);
-                Log.d(TAG, "" + hrBelowZone1[0]);
-                Log.d(TAG, "" + hrZone1[0]);
-                Log.d(TAG, "" + hrZone2[0]);
-                Log.d(TAG, "" + hrZone3[0]);
-                Log.d(TAG, "" + hrZone4[0]);
-                Log.d(TAG, "" + hrZone5[0]);
-                Log.d(TAG, "" + hrAboveZone5[0]);
-                Log.d(TAG, "" + estimatedDistance[0]);
-                Log.d(TAG, "" + averageHR[0]);
-                Log.d(TAG, "" + maxHR[0]);
-                Log.d(TAG, "" + testHRMin[0]);
-                Log.d(TAG, "" + testHRMax[0]);
-
                 testInfo.setGender(gender[0]);
                 testInfo.setAge(String.valueOf(age[0]));
                 testInfo.setHeight(String.valueOf(height[0]));
                 testInfo.setWeight(String.valueOf(weight[0]));
-                testInfo.setHrBelowZone1Percent(String.valueOf(hrBelowZone1[0]));
-                testInfo.setHrZone1Percent(String.valueOf(hrZone1[0]));
-                testInfo.setHrZone2Percent(String.valueOf(hrZone2[0]));
-                testInfo.setHrZone3Percent(String.valueOf(hrZone3[0]));
-                testInfo.setHrZone4Percent(String.valueOf(hrZone4[0]));
-                testInfo.setHrZone5Percent(String.valueOf(hrZone5[0]));
-                testInfo.setHrAboveZone5Percent(String.valueOf(hrAboveZone5[0]));
+                testInfo.setHrBelowZone1Percent(String.valueOf(hrBelowZone1Percent[0]));
+                testInfo.setHrZone1Percent(String.valueOf(hrZone1Percent[0]));
+                testInfo.setHrZone2Percent(String.valueOf(hrZone2Percent[0]));
+                testInfo.setHrZone3Percent(String.valueOf(hrZone3Percent[0]));
+                testInfo.setHrZone4Percent(String.valueOf(hrZone4Percent[0]));
+                testInfo.setHrZone5Percent(String.valueOf(hrZone5Percent[0]));
+                testInfo.setHrAboveZone5Percent(String.valueOf(hrAboveZone5Percent[0]));
                 testInfo.setEstimatedDistance(String.valueOf(estimatedDistance[0]));
                 testInfo.setTestAverageHR(String.valueOf(averageHR[0]));
                 testInfo.setHrMaxByFormula(String.valueOf(maxHR[0]));

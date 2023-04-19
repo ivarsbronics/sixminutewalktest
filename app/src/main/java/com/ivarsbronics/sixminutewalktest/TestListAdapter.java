@@ -10,9 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TestListAdapter extends ArrayAdapter<TestInfo> {
+
+    private DecimalFormat df = new DecimalFormat("#0.00");
 
     public TestListAdapter(@NonNull Context context, ArrayList<TestInfo> testArrayList) {
         super(context, R.layout.test_list_item, testArrayList);
@@ -34,10 +37,10 @@ public class TestListAdapter extends ArrayAdapter<TestInfo> {
 
         txtTestDateTime.setText(testInfo.getTestDateTime());
         if (testInfo.getUserTotalDistance() != "-") {
-            txtTestDistance.setText("Distance: " + testInfo.getUserTotalDistance() + " m");
+            txtTestDistance.setText("Distance: " + df.format(Double.valueOf(testInfo.getUserTotalDistance())) + " m");
         }
         else {
-            txtTestDistance.setText("Distance: " + testInfo.getTotalDistance() + " m");
+            txtTestDistance.setText("Distance: " + df.format(Double.valueOf(testInfo.getTotalDistance())) + " m");
         }
         txtTestAverageHR.setText("HR (average): " + testInfo.getTestAverageHR() + " pbm"); //(testInfo.getAverageHR());
 

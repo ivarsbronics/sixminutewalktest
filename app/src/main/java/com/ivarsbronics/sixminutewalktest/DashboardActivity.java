@@ -4,12 +4,14 @@ import androidx.annotation.NonNull;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -60,6 +62,7 @@ public class DashboardActivity extends DrawerBaseActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     TestInfo testInfo = dataSnapshot.getValue(TestInfo.class);
                     testInfoArrayList.add(testInfo);
+                    Log.d(TAG, "## DashboardActivity: getHRMap()" + testInfo.getHrMap());
                     testCount++;
                 }
 
@@ -73,6 +76,7 @@ public class DashboardActivity extends DrawerBaseActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             Intent intent = new Intent(DashboardActivity.this, TestInfoActivity.class);
                             intent.putExtra("EXTRA_TEST_INFO", testInfoArrayList.get(i));
+                            intent.putExtra("EXTRA_HR_MAP", testInfoArrayList.get(i).getHrMap());
                             startActivity(intent);
                         }
                     });
