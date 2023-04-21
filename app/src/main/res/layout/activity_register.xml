@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterActivity"
     android:layout_margin="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/txtRegister"
@@ -32,7 +36,7 @@
         android:id="@+id/txtTestVersionTerms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dp"
+        android:padding="7dp"
         android:background="@android:drawable/editbox_background"
         android:text="
 This mobile application is in TESTING PHASE as part of Master's Thesis.\n\n
@@ -53,7 +57,7 @@ After TESTING PHASE all user data that is gathered and used by application will 
 deleted. After data deletion none of previously registered users will be able to log into
 application."
         android:textColor="@color/black"
-        android:textSize="12dp"
+        android:textSize="16dp"
         android:layout_marginTop="1dp"
         android:layout_below="@+id/txtTermsOfUseAndDisclaimer"/>
 
@@ -145,5 +149,5 @@ application."
         android:layout_below="@id/btnTermsApproval"
         android:textColor="@color/black"
         android:layout_marginTop="5dp"/>
-
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

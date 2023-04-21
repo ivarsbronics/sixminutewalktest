@@ -85,6 +85,10 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
                 startActivity(new Intent(this, LoginActivity.class));
                 overridePendingTransition(0,0);
                 break;
+
+            case R.id.navCloseApp:
+                System.exit(0);
+                break;
         }
         return false;
     }

@@ -356,6 +356,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             @Override
             public void onClick(View view) {
                 endTestPrematurely = true;
+                pauseTimer();
                 endTest();
             }
         });
@@ -486,7 +487,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSIONS);
                 }
             }
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
             doHrMap = true;
             doLocationMap = true;
             btnStartTimer.setVisibility(View.INVISIBLE);
@@ -1014,11 +1014,16 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             }
         }
         txtHeaderText.setText("Test Phase");
+        txtTestInfo.setVisibility(View.INVISIBLE);
         testPhase = true;
         resetTimer();
         btnBTOnOff.setVisibility(View.GONE);
         btnSkipHRMonitor.setVisibility(View.GONE);
-        txtInfo.setVisibility(View.GONE);
+        //txtInfo.setVisibility(View.GONE);
+        txtInfo.setText("If you have granted access to GPS location tracking to this application:" +
+                "\n\tfrom now on until test is finished:" +
+                "\n\t\t1. don't minimize the application!" +
+                "\n\t\t2. don't switch to other applications!");
         btnStartTestPhase.setVisibility(View.GONE);
         if (hrMonitorConnected) {
             txtDeviceName.setVisibility(View.VISIBLE);
@@ -1041,6 +1046,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         if (!(bluetoothGatt == null)) {
             bluetoothGatt.disconnect();
         }
+        locationManager.removeUpdates(SixMWTActivity.this);
         if (endTestPrematurely) {
             Log.d(TAG, "### endTest()  endTestPrematurely = true");
             startActivity(new Intent(SixMWTActivity.this, HomeActivity.class));

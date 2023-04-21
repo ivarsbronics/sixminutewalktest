@@ -15,5 +15,7 @@
             android:title="Parameters"/>
         <item android:id="@+id/navLogout"
             android:title="Log Out"/>
+        <item android:id="@+id/navCloseApp"
+            android:title="Close App"/>
     </group>
 </menu>
