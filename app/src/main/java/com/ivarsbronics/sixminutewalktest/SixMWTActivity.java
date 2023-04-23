@@ -106,9 +106,8 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
     /*variables for logic support*/
     private HashMap<String, String> hrMap = new HashMap();
     private HashMap<String, LatLngCustom> locationMap = new HashMap();
-    private HashMap<String, String> testParameters = new HashMap();
 
-    private TestInfo testInfo = new TestInfo();
+    private final TestInfo testInfo = new TestInfo();
     private int prepPhaseHRStart, prepPhaseHREnd, prepPhaseHRMin, prepPhaseHRMax;
     private boolean doHrMap = false;
     private boolean doLocationMap = false;
@@ -356,7 +355,9 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             @Override
             public void onClick(View view) {
                 endTestPrematurely = true;
-                pauseTimer();
+                if (countDownTimer != null) {
+                    pauseTimer();
+                }
                 endTest();
             }
         });
@@ -1076,7 +1077,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             testInfo.setPrepPhaseHRMax(String.valueOf(prepPhaseHRMax));
 
             DatabaseReference testsReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests");
-            testsReference.child(currentUser.getUid()).child(String.valueOf(testStartMillis)).setValue(testInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+            testsReference.child(currentUser.getUid()).child(String.valueOf(-1 * testStartMillis)).setValue(testInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {

@@ -55,7 +55,7 @@ public class DashboardActivity extends DrawerBaseActivity {
         txtInfo = findViewById(R.id.txtInfo);
 
         DatabaseReference userTestsReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests").child(currentUser.getUid());
-        userTestsReference.addValueEventListener(new ValueEventListener() {
+        userTestsReference.orderByKey().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 testInfoArrayList.clear();
