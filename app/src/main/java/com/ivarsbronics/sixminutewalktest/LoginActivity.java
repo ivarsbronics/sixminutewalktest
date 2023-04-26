@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private EditText email, password;
-    private Button btnLogIn;
+    private Button btnLogIn, btnCloseApp;
     private TextView register, forgotpw;
 
     @Override
@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.etxtEMail);
         password = findViewById(R.id.etxtPassword);
         btnLogIn = findViewById(R.id.btnLogIn);
+        btnCloseApp = findViewById(R.id.btnCloseApp);
         register = findViewById(R.id.txtRegister);
         forgotpw = findViewById(R.id.txtForgotPassword);
 
@@ -39,6 +40,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 login();
+            }
+        });
+
+        btnCloseApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                System.exit(0);
             }
         });
 

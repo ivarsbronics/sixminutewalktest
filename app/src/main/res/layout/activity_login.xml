@@ -47,7 +47,7 @@
 
     <Button
         android:id="@+id/btnLogIn"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/etxtPassword"
         android:layout_centerHorizontal="true"
@@ -73,5 +73,14 @@
         android:layout_below="@id/txtRegister"
         android:visibility="invisible"
         android:layout_marginTop="5dp"/>
+
+    <Button
+        android:id="@+id/btnCloseApp"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtForgotPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:text="Close App" />
 
 </RelativeLayout>
