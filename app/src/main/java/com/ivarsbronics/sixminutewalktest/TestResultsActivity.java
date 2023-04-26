@@ -7,6 +7,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 import com.ivarsbronics.sixminutewalktest.databinding.ActivityTestResultsBinding;
 
+import java.text.DecimalFormat;
+
 public class TestResultsActivity extends DrawerBaseActivity {
 
     private static final String TAG = "TestResultsActivity";
@@ -22,6 +24,8 @@ public class TestResultsActivity extends DrawerBaseActivity {
     private TestInfo testInfo;
 
     private boolean useUserEnteredDistance = false;
+
+    private DecimalFormat df = new DecimalFormat("#0.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +54,7 @@ public class TestResultsActivity extends DrawerBaseActivity {
         }
 
         testResults = testInfo.getTestDateTime() + "\n\nAccording to provided test parameters estimated distance for healthy" +
-                " individual is:\n\t\t" + estimatedDistance + " meters.\nActual distance covered in 6 minutes" +
+                " individual is:\n\t\t" + df.format(estimatedDistance) + " meters.\nActual distance covered in 6 minutes" +
                 " of the test ";
         if (useUserEnteredDistance) {
             testResults = testResults + "(entered by user) is:\n\t\t";
@@ -58,7 +62,7 @@ public class TestResultsActivity extends DrawerBaseActivity {
         else {
             testResults = testResults + "based on GPS tracking is:\n\t\t";
         }
-        testResults = testResults + totalDistance + " meters. \nDuring test you have covered " +
+        testResults = testResults + df.format(totalDistance) + " meters. \nDuring test you have covered " +
                 (double)((int)(totalDistance/estimatedDistance*10000))/100 + "% of estimated distance.\n\n" +
                 "Your estimated maximum Heart Rate according to formula \"(207 - 0.7 * Age)\"" +
                 "is:\n\t\t" + testInfo.getHrMaxByFormula() + "\n";
@@ -96,7 +100,10 @@ public class TestResultsActivity extends DrawerBaseActivity {
                 "\t\tBood Pressure:\n" +
                 "\t\t\tSystolic: " + testInfo.getPostTestBloodPressureSystolic() + "\n" +
                 "\t\t\tDiastolic: " + testInfo.getPostTestBloodPressureDiastolic() + "\n" +
-                "\t\tOxygen Saturation: " + testInfo.getPostTestOxygenSaturation() + "\n";
+                "\t\tOxygen Saturation: " + testInfo.getPostTestOxygenSaturation() + "\n\n";
+        if (testInfo.getAdditionalComments() != null && !"".equals(testInfo.getAdditionalComments())) {
+            testResults = testResults + "Additional Comments:\n" + "--------\n" + testInfo.getAdditionalComments() + "\n--------";
+        }
 
         txtTestInfo.setMovementMethod(new ScrollingMovementMethod());
         txtTestInfo.setText(testResults);

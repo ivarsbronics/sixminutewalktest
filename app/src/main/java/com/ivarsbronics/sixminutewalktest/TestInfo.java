@@ -45,7 +45,9 @@ public class TestInfo implements Parcelable {
             hrAboveZone5Percent,
             endTestPrematurely,
             estimatedDistance,
-            hrMonitorSkipped
+            hrMonitorSkipped,
+            additionalComments,
+            testTimeInMillisNegative
                     ;
     private HashMap<String, String> hrMap = new HashMap();
     private HashMap<String, LatLngCustom> locationMap = new HashMap();
@@ -91,6 +93,8 @@ public class TestInfo implements Parcelable {
         endTestPrematurely = in.readString();
         estimatedDistance = in.readString();
         hrMonitorSkipped = in.readString();
+        additionalComments = in.readString();
+        testTimeInMillisNegative = in.readString();
     }
 
     public static final Creator<TestInfo> CREATOR = new Creator<TestInfo>() {
@@ -417,6 +421,22 @@ public class TestInfo implements Parcelable {
         this.hrMonitorSkipped = hrMonitorSkipped;
     }
 
+    public String getAdditionalComments() {
+        return additionalComments;
+    }
+
+    public void setAdditionalComments(String additionalComments) {
+        this.additionalComments = additionalComments;
+    }
+
+    public String getTestTimeInMillisNegative() {
+        return testTimeInMillisNegative;
+    }
+
+    public void setTestTimeInMillisNegative(String testTimeInMillisNegative) {
+        this.testTimeInMillisNegative = testTimeInMillisNegative;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -461,5 +481,7 @@ public class TestInfo implements Parcelable {
         parcel.writeString(endTestPrematurely);
         parcel.writeString(estimatedDistance);
         parcel.writeString(hrMonitorSkipped);
+        parcel.writeString(additionalComments);
+        parcel.writeString(testTimeInMillisNegative);
     }
 }

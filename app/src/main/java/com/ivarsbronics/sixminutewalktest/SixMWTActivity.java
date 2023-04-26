@@ -30,6 +30,7 @@ import android.os.CountDownTimer;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.text.format.DateFormat;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,6 +46,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -102,6 +105,8 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
     private TextView txtHeaderText, txtDeviceName, txtHrValue, txtTimer, txtInfo, txtTestInfo,
             txtDyspnea, txtFatigue, txtBloodPressure, txtOxygenSaturation, txtDistance;
     private Spinner spinnerDyspnea, spinnerFatigue;
+    private TextInputLayout tilAdditionalComments;
+    private TextInputEditText etAdditionalComment;
 
     /*variables for logic support*/
     private HashMap<String, String> hrMap = new HashMap();
@@ -186,6 +191,8 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         txtDistance = findViewById(R.id.txtDistance);
         spinnerDyspnea = findViewById(R.id.spinnerDyspnea);
         spinnerFatigue = findViewById(R.id.spinnerFatigue);
+        tilAdditionalComments = findViewById(R.id.tilAdditionalComments);
+        etAdditionalComment = findViewById(R.id.etAdditionalComment);
 
         deviceListView = (ListView) findViewById(R.id.deviceListView);
 
@@ -205,6 +212,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
         txtInfo.setText("Before You start, please re-check Test Parameters and update them to have" +
                 " most accurate estimated values selected for You!");
+        txtInfo.setMovementMethod(new ScrollingMovementMethod());
         /*steps to setup drop down lists for dyspnea and fatigue scales*/
         /*set array adapter to contain values*/
         arrayAdapterScale = ArrayAdapter.createFromResource(this, R.array.BorgScale, R.layout.spinner_layout);
@@ -288,6 +296,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                 testInfo.setHrMonitorSkipped("Y");
                 testStartMillis = System.currentTimeMillis();
                 testInfo.setTestTimeInMillis(String.valueOf(testStartMillis));
+                testInfo.setTestTimeInMillisNegative(String.valueOf(-1 * testStartMillis));
                 preparePreparationPhase();
             }
         });
@@ -435,17 +444,27 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                 btnStartTimer.setClickable(false);
                 if (preparationPhase) {
                     preTestParameters();
-                    //prepareTestPhase();
                 }
                 if (testPhase) {
                     doHrMap = false;
                     doLocationMap = false;
+                    if (ActivityCompat.checkSelfPermission(SixMWTActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, BLUETOOTH_CONNECT_PERMISSIONS);
+                        } else {
+                            Log.d(TAG, "#### permissions not requested because of version check");
+                        }
+                    }
+                    if (!(bluetoothGatt == null)) {
+                        bluetoothGatt.disconnect();
+                    }
                     locationManager.removeUpdates(SixMWTActivity.this);
+                    prevLocation = null;
                     calculateAdditionalTestDetails();
                     txtDistance.setText("Distance Covered in meters (GPS)\n(If incorrect adjust value)");
                     txtDistance.setTextSize(18);
                     etDistance.setVisibility(View.VISIBLE);
-                    etDistance.setText(String.valueOf(totalDistance));
+                    etDistance.setText(df.format(totalDistance));
                     txtTimer.setVisibility(View.GONE);
                     btnStartTimer.setVisibility(View.GONE);
                     btnResetTimer.setVisibility(View.GONE);
@@ -457,20 +476,22 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                     txtInfo.setText("Please fill post-test parameters if you have tools to do the " +
                             "measurements.\nIf test was performed 1) indoors; 2) with poor GPS signal; " +
                             "3) without GPS, please enter distance covered manually.\nIf distance " +
-                            "measured by GPS is not accurate, please correct the value.");
+                            "measured by GPS is not accurate, please correct the value.\n\n" +
+                            "Use 'Additional Test Comments' field to add relevant information about " +
+                            "test - anything that could be useful to you or healthcare specialist!");
                     txtDyspnea.setVisibility(View.VISIBLE);
                     txtFatigue.setVisibility(View.VISIBLE);
                     txtDyspnea.setText("Post-Test Dyspnea:");
                     txtFatigue.setText("Post-Test Fatigue:");
                     txtBloodPressure.setText("Post-Test Blood Pressure:");
                     txtOxygenSaturation.setText("Post-Test Oxygen Saturation:");
+                    tilAdditionalComments.setVisibility(View.VISIBLE);
                     spinnerDyspnea.setVisibility(View.VISIBLE);
                     spinnerFatigue.setVisibility(View.VISIBLE);
                     txtBloodPressure.setVisibility(View.VISIBLE);
                     txtOxygenSaturation.setVisibility(View.VISIBLE);
                     layoutBloodPressure.setVisibility(View.VISIBLE);
                     etOxygenSaturation.setVisibility(View.VISIBLE);
-                    //btnContinue.setVisibility(View.VISIBLE);
                     btnEndTest.setVisibility(View.VISIBLE);
                 }
             }
@@ -902,7 +923,27 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         deviceListView.setVisibility(View.GONE);
         txtHeaderText.setText("Preparation Phase");
         txtInfo.setVisibility(View.VISIBLE);
-        txtInfo.setText("During preparation phase please remain seated until timer finishes countdown. " +
+        txtInfo.setText("According to Six Minute Walk test guidelines there are absolute and relative" +
+                "contraindications for the test. Consult with your healthcare specialist before doing the test.\n\n" +
+                "ABSOLUTE CONTRAINDICATIONS:\n" +
+                "\t1. acute myocardial infarction\n" +
+                "\t2. unstable angina (acute phase)\n" +
+                "\t3. uncontrolled arrhythmias causing symptoms or hemodynamic compromise\n" +
+                "\t4. acute myocarditis or pericarditis\n" +
+                "\t5. uncontrolled acutely decompensated HF (acute pulmonary edema)\n" +
+                "\t6. acute pulmonary embolism,\n" +
+                "\t7. suspected dissecting aneurysm\n" +
+                "\t8. severe hypoxemia at rest\n" +
+                "\t9. acute respiratory failure\n" +
+                "\t10. acute non-cardiopulmonary disorder that may affect exercise performance or be aggravated by exercise (such as infection, renal failure, thyrotoxicosis)\n" +
+                "\t11. mental impairment leading to inability to cooperate\n\n" +
+                "RELATIVE CONTRAINDICATIONS:\n" +
+                "\t1. resting heart rate >120 beats/min\n" +
+                "\t2. systolic blood pressure >180 mmHg\n" +
+                "\t3. diastolic pressure >100 mmHg\n\n" +
+                "TEST MUST BE IMMEDIATELY STOPPED in case of chest pain, intolerable dyspnea, leg " +
+                "cramps, diaphoresis or any report of not feeling well.\n\n" +
+                "During preparation phase please remain seated until timer finishes countdown. " +
                 "Do not perform any unnecessary movements and actions - goal of \"Preparation Phase\" is to " +
                 "determine your resting heart rate.\n\n" +
                 "Getting ready before \"Preparation Phase\" and \"Test Phase\":\n" +
@@ -1048,19 +1089,20 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             bluetoothGatt.disconnect();
         }
         locationManager.removeUpdates(SixMWTActivity.this);
+        prevLocation = null;
         if (endTestPrematurely) {
             Log.d(TAG, "### endTest()  endTestPrematurely = true");
             startActivity(new Intent(SixMWTActivity.this, HomeActivity.class));
             Log.d(TAG, "### endTest()  END");
         } else {
             Log.d(TAG, "### endTest()  endTestPrematurely = false");
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
             testInfo.setTestDateTime(DateFormat.format("dd-MMM-yyyy HH:mm:ss", Long.parseLong(testInfo.getTestTimeInMillis())).toString());
             testInfo.setPostTestValueDyspnea(valueDyspnea);
             testInfo.setPostTestValueFatigue(valueFatigue);
             testInfo.setPostTestBloodPressureSystolic(etBloodPressureSystolic.getText().toString());
             testInfo.setPostTestBloodPressureDiastolic(etBloodPressureDiastolic.getText().toString());
             testInfo.setPostTestOxygenSaturation(etOxygenSaturation.getText().toString());
+            testInfo.setAdditionalComments(etAdditionalComment.getText().toString());
             doHrMap = false;
             doLocationMap = false;
             if (endTestPrematurely) {
@@ -1071,13 +1113,13 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             }
             testInfo.setHrMap(hrMap);
             testInfo.setLocationMap(locationMap);
-            testInfo.setTotalDistance(String.valueOf(df.format(totalDistance)));
+            testInfo.setTotalDistance(df.format(totalDistance));
             testInfo.setUserTotalDistance(etDistance.getText().toString());
             testInfo.setPrepPhaseHRMin(String.valueOf(prepPhaseHRMin));
             testInfo.setPrepPhaseHRMax(String.valueOf(prepPhaseHRMax));
 
             DatabaseReference testsReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests");
-            testsReference.child(currentUser.getUid()).child(String.valueOf(-1 * testStartMillis)).setValue(testInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+            testsReference.child(currentUser.getUid()).child(String.valueOf(testStartMillis)).setValue(testInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
@@ -1090,7 +1132,6 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             });
             Intent intent = new Intent(SixMWTActivity.this, TestResultsActivity.class);
             intent.putExtra("EXTRA_TEST_INFO", testInfo);
-            //intent.putExtra("EXTRA_GPS_MAP", locationMap);
             startActivity(intent);
             Log.d(TAG, "### endTest()  END");
         }

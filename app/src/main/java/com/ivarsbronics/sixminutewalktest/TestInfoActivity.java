@@ -76,99 +76,96 @@ public class TestInfoActivity extends AppCompatActivity {
 
         Log.d(TAG, "## TestInfoActivity: getHRMap()" + testInfo.getHrMap());
 
-        if (testInfo.getHrBelowZone1Percent() != null && !"".equals(testInfo.getHrBelowZone1Percent())){
-            hrBelowZone1Percent = Double.parseDouble(testInfo.getHrBelowZone1Percent());
-        }
-        if (testInfo.getHrZone1Percent() != null && !"".equals(testInfo.getHrZone1Percent())){
-            hrZone1Percent = Double.parseDouble(testInfo.getHrZone1Percent());
-        }
-        if (testInfo.getHrZone2Percent() != null && !"".equals(testInfo.getHrZone2Percent())){
-            hrZone2Percent = Double.parseDouble(testInfo.getHrZone2Percent());
-        }
-        if (testInfo.getHrZone3Percent() != null && !"".equals(testInfo.getHrZone3Percent())){
-            hrZone3Percent = Double.parseDouble(testInfo.getHrZone3Percent());
-        }
-        if (testInfo.getHrZone4Percent() != null && !"".equals(testInfo.getHrZone4Percent())){
-            hrZone4Percent = Double.parseDouble(testInfo.getHrZone4Percent());
-        }
-        if (testInfo.getHrZone5Percent() != null && !"".equals(testInfo.getHrZone5Percent())){
-            hrZone5Percent = Double.parseDouble(testInfo.getHrZone5Percent());
-        }
-        if (testInfo.getHrAboveZone5Percent() != null && !"".equals(testInfo.getHrAboveZone5Percent())){
-            hrAboveZone5Percent = Double.parseDouble(testInfo.getHrAboveZone5Percent());
-        }
+        if (testInfo.getDeviceName() != null && !"".equals(testInfo.getDeviceName())) {
 
-        if (hrBelowZone1Percent + hrZone1Percent + hrZone2Percent + hrZone3Percent + hrZone4Percent + hrZone5Percent + hrAboveZone5Percent < 91){
-            if (testInfo.getHrMaxByFormula() != null && !"".equals(testInfo.getHrMaxByFormula())){
-                estimatedMaxHR = Double.parseDouble(testInfo.getHrMaxByFormula());
+            if (testInfo.getHrBelowZone1Percent() != null && !"".equals(testInfo.getHrBelowZone1Percent())) {
+                hrBelowZone1Percent = Double.parseDouble(testInfo.getHrBelowZone1Percent());
             }
-            if (estimatedMaxHR > 0) {
-                for (Object hrValue : testInfo.getHrMap().values()) {
-                    int value = Integer.parseInt(String.valueOf(hrValue));
-                    //Log.d(TAG, "estimatedMaxHR = " + estimatedMaxHR);
-                    Log.d(TAG, "hrValue = " + hrValue);
-                    hrValueCount = hrValueCount + 1;
-                    Log.d(TAG, "hrValueCount = " + hrValueCount);
-                    if (value < estimatedMaxHR * 0.5) {
-                        hrBelowZone1 = hrBelowZone1 + 1;
-                    }
-                    else if (value >= estimatedMaxHR * 0.5 && value < estimatedMaxHR * 0.6 ) {
-                        hrZone1 = hrZone1 + 1;
-                    }
-                    else if (value >= estimatedMaxHR * 0.6 && value < estimatedMaxHR * 0.7 ) {
-                        hrZone2 = hrZone2 + 1;
-                    }
-                    else if (value >= estimatedMaxHR * 0.7 && value < estimatedMaxHR * 0.8 ) {
-                        hrZone3 = hrZone3 + 1;
-                    }
-                    else if (value >= estimatedMaxHR * 0.8 && value < estimatedMaxHR * 0.9 ) {
-                        hrZone3 = hrZone4 + 1;
-                    }
-                    else if (value >= estimatedMaxHR * 0.9 && value <= estimatedMaxHR) {
-                        hrZone5 = hrZone5 + 1;
-                    }
-                    else if (value > estimatedMaxHR) {
-                        hrAboveZone5 = hrAboveZone5 + 1;
-                    }
-                }
+            if (testInfo.getHrZone1Percent() != null && !"".equals(testInfo.getHrZone1Percent())) {
+                hrZone1Percent = Double.parseDouble(testInfo.getHrZone1Percent());
+            }
+            if (testInfo.getHrZone2Percent() != null && !"".equals(testInfo.getHrZone2Percent())) {
+                hrZone2Percent = Double.parseDouble(testInfo.getHrZone2Percent());
+            }
+            if (testInfo.getHrZone3Percent() != null && !"".equals(testInfo.getHrZone3Percent())) {
+                hrZone3Percent = Double.parseDouble(testInfo.getHrZone3Percent());
+            }
+            if (testInfo.getHrZone4Percent() != null && !"".equals(testInfo.getHrZone4Percent())) {
+                hrZone4Percent = Double.parseDouble(testInfo.getHrZone4Percent());
+            }
+            if (testInfo.getHrZone5Percent() != null && !"".equals(testInfo.getHrZone5Percent())) {
+                hrZone5Percent = Double.parseDouble(testInfo.getHrZone5Percent());
+            }
+            if (testInfo.getHrAboveZone5Percent() != null && !"".equals(testInfo.getHrAboveZone5Percent())) {
+                hrAboveZone5Percent = Double.parseDouble(testInfo.getHrAboveZone5Percent());
             }
 
-            hrBelowZone1Percent = (double)((int)((double)hrBelowZone1 / (double)hrValueCount * 10000))/100;
-            hrZone1Percent = (double)((int)((double)hrZone1 / (double)hrValueCount * 10000))/100;
-            hrZone2Percent = (double)((int)((double)hrZone2 / (double)hrValueCount * 10000))/100;
-            hrZone3Percent = (double)((int)((double)hrZone3 / (double)hrValueCount * 10000))/100;
-            hrZone4Percent = (double)((int)((double)hrZone4 / (double)hrValueCount * 10000))/100;
-            hrZone5Percent = (double)((int)((double)hrZone5 / (double)hrValueCount * 10000))/100;
-            hrAboveZone5Percent = (double)((int)((double)hrAboveZone5 / (double)hrValueCount * 10000))/100;
-
-            testInfo.setHrBelowZone1Percent(String.valueOf(hrBelowZone1Percent));
-            testInfo.setHrZone1Percent(String.valueOf(hrZone1Percent));
-            testInfo.setHrZone2Percent(String.valueOf(hrZone2Percent));
-            testInfo.setHrZone3Percent(String.valueOf(hrZone3Percent));
-            testInfo.setHrZone4Percent(String.valueOf(hrZone4Percent));
-            testInfo.setHrZone5Percent(String.valueOf(hrZone5Percent));
-            testInfo.setHrAboveZone5Percent(String.valueOf(hrAboveZone5Percent));
-
-            testInfoUpdate.put("hrBelowZone1Percent", String.valueOf(hrBelowZone1Percent));
-            testInfoUpdate.put("hrZone1Percent", String.valueOf(hrZone1Percent));
-            testInfoUpdate.put("hrZone2Percent", String.valueOf(hrZone2Percent));
-            testInfoUpdate.put("hrZone3Percent", String.valueOf(hrZone3Percent));
-            testInfoUpdate.put("hrZone4Percent", String.valueOf(hrZone4Percent));
-            testInfoUpdate.put("hrZone5Percent", String.valueOf(hrZone5Percent));
-            testInfoUpdate.put("hrAboveZone5Percent", String.valueOf(hrAboveZone5Percent));
-
-            mAuth = FirebaseAuth.getInstance();
-            currentUser = mAuth.getCurrentUser();
-            DatabaseReference testReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests").child(currentUser.getUid());
-            testReference.child(String.valueOf(testStartMillis)).updateChildren(testInfoUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(TestInfoActivity.this, "Updated HR Zone Data based on HR measurements!", Toast.LENGTH_SHORT).show();
+            if (hrBelowZone1Percent + hrZone1Percent + hrZone2Percent + hrZone3Percent + hrZone4Percent + hrZone5Percent + hrAboveZone5Percent < 91) {
+                if (testInfo.getHrMaxByFormula() != null && !"".equals(testInfo.getHrMaxByFormula())) {
+                    estimatedMaxHR = Double.parseDouble(testInfo.getHrMaxByFormula());
                 }
-            });
+                if (estimatedMaxHR > 0) {
+                    for (Object hrValue : testInfo.getHrMap().values()) {
+                        int value = Integer.parseInt(String.valueOf(hrValue));
+                        //Log.d(TAG, "estimatedMaxHR = " + estimatedMaxHR);
+                        Log.d(TAG, "hrValue = " + hrValue);
+                        hrValueCount = hrValueCount + 1;
+                        Log.d(TAG, "hrValueCount = " + hrValueCount);
+                        if (value < estimatedMaxHR * 0.5) {
+                            hrBelowZone1 = hrBelowZone1 + 1;
+                        } else if (value >= estimatedMaxHR * 0.5 && value < estimatedMaxHR * 0.6) {
+                            hrZone1 = hrZone1 + 1;
+                        } else if (value >= estimatedMaxHR * 0.6 && value < estimatedMaxHR * 0.7) {
+                            hrZone2 = hrZone2 + 1;
+                        } else if (value >= estimatedMaxHR * 0.7 && value < estimatedMaxHR * 0.8) {
+                            hrZone3 = hrZone3 + 1;
+                        } else if (value >= estimatedMaxHR * 0.8 && value < estimatedMaxHR * 0.9) {
+                            hrZone3 = hrZone4 + 1;
+                        } else if (value >= estimatedMaxHR * 0.9 && value <= estimatedMaxHR) {
+                            hrZone5 = hrZone5 + 1;
+                        } else if (value > estimatedMaxHR) {
+                            hrAboveZone5 = hrAboveZone5 + 1;
+                        }
+                    }
+                }
+
+                hrBelowZone1Percent = (double) ((int) ((double) hrBelowZone1 / (double) hrValueCount * 10000)) / 100;
+                hrZone1Percent = (double) ((int) ((double) hrZone1 / (double) hrValueCount * 10000)) / 100;
+                hrZone2Percent = (double) ((int) ((double) hrZone2 / (double) hrValueCount * 10000)) / 100;
+                hrZone3Percent = (double) ((int) ((double) hrZone3 / (double) hrValueCount * 10000)) / 100;
+                hrZone4Percent = (double) ((int) ((double) hrZone4 / (double) hrValueCount * 10000)) / 100;
+                hrZone5Percent = (double) ((int) ((double) hrZone5 / (double) hrValueCount * 10000)) / 100;
+                hrAboveZone5Percent = (double) ((int) ((double) hrAboveZone5 / (double) hrValueCount * 10000)) / 100;
+
+                testInfo.setHrBelowZone1Percent(String.valueOf(hrBelowZone1Percent));
+                testInfo.setHrZone1Percent(String.valueOf(hrZone1Percent));
+                testInfo.setHrZone2Percent(String.valueOf(hrZone2Percent));
+                testInfo.setHrZone3Percent(String.valueOf(hrZone3Percent));
+                testInfo.setHrZone4Percent(String.valueOf(hrZone4Percent));
+                testInfo.setHrZone5Percent(String.valueOf(hrZone5Percent));
+                testInfo.setHrAboveZone5Percent(String.valueOf(hrAboveZone5Percent));
+
+                testInfoUpdate.put("hrBelowZone1Percent", String.valueOf(hrBelowZone1Percent));
+                testInfoUpdate.put("hrZone1Percent", String.valueOf(hrZone1Percent));
+                testInfoUpdate.put("hrZone2Percent", String.valueOf(hrZone2Percent));
+                testInfoUpdate.put("hrZone3Percent", String.valueOf(hrZone3Percent));
+                testInfoUpdate.put("hrZone4Percent", String.valueOf(hrZone4Percent));
+                testInfoUpdate.put("hrZone5Percent", String.valueOf(hrZone5Percent));
+                testInfoUpdate.put("hrAboveZone5Percent", String.valueOf(hrAboveZone5Percent));
+
+                mAuth = FirebaseAuth.getInstance();
+                currentUser = mAuth.getCurrentUser();
+                DatabaseReference testReference = FirebaseDatabase.getInstance(dbInstance).getReference("tests").child(currentUser.getUid());
+                testReference.child(String.valueOf(testStartMillis)).updateChildren(testInfoUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(TestInfoActivity.this, "Updated HR Zone Data based on HR measurements!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
 
-        if (!testInfo.getTotalDistance().equals(testInfo.getUserTotalDistance())) {
+        if (testInfo.getTotalDistance().equals(testInfo.getUserTotalDistance())) {
             if (testInfo.getTotalDistance() != null && !"".equals(testInfo.getTotalDistance())) {
                 totalDistance = Double.parseDouble(testInfo.getTotalDistance());
             }
@@ -194,8 +191,8 @@ public class TestInfoActivity extends AppCompatActivity {
         else {
             testResults = testResults + "based on GPS tracking is:\n\t\t";
         }
-        testResults = testResults + totalDistance + " meters. \nDuring test you have covered " +
-                df.format(totalDistance/estimatedDistance) + "% of estimated distance.\n\n" +
+        testResults = testResults + df.format(totalDistance) + " meters. \nDuring test you have covered " +
+                df.format(totalDistance/estimatedDistance*100) + "% of estimated distance.\n\n" +
                 "Your estimated maximum Heart Rate according to formula \"(207 - 0.7 * Age)\"" +
                 "is:\n\t\t" + testInfo.getHrMaxByFormula() + "\n";
         if (testInfo.getPrepPhaseHRMin() != null && !"".equals(testInfo.getPrepPhaseHRMin())) {
@@ -232,7 +229,10 @@ public class TestInfoActivity extends AppCompatActivity {
                 "\t\tBood Pressure:\n" +
                 "\t\t\tSystolic: " + testInfo.getPostTestBloodPressureSystolic() + "\n" +
                 "\t\t\tDiastolic: " + testInfo.getPostTestBloodPressureDiastolic() + "\n" +
-                "\t\tOxygen Saturation: " + testInfo.getPostTestOxygenSaturation() + "\n";
+                "\t\tOxygen Saturation: " + testInfo.getPostTestOxygenSaturation() + "\n\n";
+        if (testInfo.getAdditionalComments() != null && !"".equals(testInfo.getAdditionalComments())) {
+            testResults = testResults + "Additional Comments:\n" + "--------\n" + testInfo.getAdditionalComments() + "\n--------";
+        }
 
         txtTestInfo.setMovementMethod(new ScrollingMovementMethod());
         txtTestInfo.setText(testResults);

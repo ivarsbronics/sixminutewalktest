@@ -65,12 +65,12 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
                 overridePendingTransition(0,0);
                 break;
 
-            /*case R.id.navThird:
-                startActivity(new Intent(this, SixMWTActivity.class));
+            case R.id.navHome:
+                startActivity(new Intent(DrawerBaseActivity.this, HomeActivity.class));
                 overridePendingTransition(0,0);
                 break;
 
-            case R.id.navFourth:
+            /*case R.id.navFourth:
                 startActivity(new Intent(this, DashboardActivity.class));
                 overridePendingTransition(0,0);
                 break;*/
@@ -87,6 +87,7 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
                 break;
 
             case R.id.navCloseApp:
+                finish();
                 System.exit(0);
                 break;
         }

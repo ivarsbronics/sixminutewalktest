@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -127,7 +128,7 @@ public class ProfileActivity extends DrawerBaseActivity {
                 if (radioButtonId == -1){
                     AlertDialog.Builder alertDialog  = new AlertDialog.Builder(ProfileActivity.this);
                     alertDialog.setTitle(" ");
-                    alertDialog.setMessage("Please select the gender that fits your the most!\nApplication uses formulas published in scientific publications!\nThe more accurate values are selected - the more accurate estimated values will be provided.");
+                    alertDialog.setMessage("Please select the gender that fits your the most!\nApplication uses formulas published in scientific publications!\nThe more accurate parameters are provided - the more accurate estimated values will be provided.");
                     alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog,int which) {
                         }
@@ -167,6 +168,7 @@ public class ProfileActivity extends DrawerBaseActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(ProfileActivity.this, "Parameters Saved Successful!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(ProfileActivity.this, HomeActivity.class));
                 }
                 else{
                     Log.d(TAG, task.getException().getMessage());
