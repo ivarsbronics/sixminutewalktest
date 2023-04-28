@@ -167,18 +167,18 @@ public class TestInfoActivity extends AppCompatActivity {
 
         if (testInfo.getTotalDistance().equals(testInfo.getUserTotalDistance())) {
             if (testInfo.getTotalDistance() != null && !"".equals(testInfo.getTotalDistance())) {
-                totalDistance = Double.parseDouble(testInfo.getTotalDistance());
+                totalDistance = Double.parseDouble(testInfo.getTotalDistance().toString().replace(",","."));
             }
         }
         else {
             if (testInfo.getUserTotalDistance() != null && !"".equals(testInfo.getUserTotalDistance())) {
-                totalDistance = Double.parseDouble(testInfo.getUserTotalDistance());
+                totalDistance = Double.parseDouble(testInfo.getUserTotalDistance().toString().replace(",","."));
             }
             useUserEnteredDistance = true;
         }
         Log.d(TAG, "totalDistance = " + totalDistance);
         if (testInfo.getEstimatedDistance() != null && !"".equals(testInfo.getEstimatedDistance())) {
-            estimatedDistance = Double.parseDouble(testInfo.getEstimatedDistance());
+            estimatedDistance = Double.parseDouble(testInfo.getEstimatedDistance().toString().replace(",","."));
         }
         Log.d(TAG, "estimatedDistance = " + estimatedDistance);
 

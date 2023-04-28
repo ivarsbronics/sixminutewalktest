@@ -1113,8 +1113,8 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
             }
             testInfo.setHrMap(hrMap);
             testInfo.setLocationMap(locationMap);
-            testInfo.setTotalDistance(df.format(String.valueOf(totalDistance).replace(",", ".")));
-            testInfo.setUserTotalDistance(df.format(etDistance.getText().toString().replace(",", ".")));
+            testInfo.setTotalDistance(df.format(totalDistance));
+            testInfo.setUserTotalDistance(etDistance.getText().toString());
             testInfo.setPrepPhaseHRMin(String.valueOf(prepPhaseHRMin));
             testInfo.setPrepPhaseHRMax(String.valueOf(prepPhaseHRMax));
 

@@ -40,17 +40,17 @@ public class TestResultsActivity extends DrawerBaseActivity {
 
         if (!testInfo.getTotalDistance().equals(testInfo.getUserTotalDistance())) {
             if (testInfo.getTotalDistance() != null && !"".equals(testInfo.getTotalDistance())) {
-                totalDistance = Double.parseDouble(testInfo.getTotalDistance());
+                totalDistance = Double.parseDouble(testInfo.getTotalDistance().toString().replace(",","."));
             }
         }
         else {
             if (testInfo.getUserTotalDistance() != null && !"".equals(testInfo.getUserTotalDistance())) {
-                totalDistance = Double.parseDouble(testInfo.getUserTotalDistance());
+                totalDistance = Double.parseDouble(testInfo.getUserTotalDistance().toString().replace(",","."));
             }
             useUserEnteredDistance = true;
         }
         if (testInfo.getEstimatedDistance() != null && !"".equals(testInfo.getEstimatedDistance())) {
-            estimatedDistance = Double.parseDouble(testInfo.getEstimatedDistance());
+            estimatedDistance = Double.parseDouble(testInfo.getEstimatedDistance().toString().replace(",","."));
         }
 
         testResults = testInfo.getTestDateTime() + "\n\nAccording to provided test parameters estimated distance for healthy" +

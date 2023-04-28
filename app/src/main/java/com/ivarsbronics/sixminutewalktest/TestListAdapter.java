@@ -37,10 +37,10 @@ public class TestListAdapter extends ArrayAdapter<TestInfo> {
 
         txtTestDateTime.setText(testInfo.getTestDateTime());
         if (testInfo.getUserTotalDistance() != "-") {
-            txtTestDistance.setText("Distance: " + df.format(Double.valueOf(testInfo.getUserTotalDistance())) + " m");
+            txtTestDistance.setText("Distance: " + df.format(Double.valueOf(testInfo.getUserTotalDistance().toString().replace(",","."))) + " m");
         }
         else {
-            txtTestDistance.setText("Distance: " + df.format(Double.valueOf(testInfo.getTotalDistance())) + " m");
+            txtTestDistance.setText("Distance: " + df.format(Double.valueOf(testInfo.getTotalDistance().toString().replace(",","."))) + " m");
         }
         txtTestAverageHR.setText("HR (average): " + testInfo.getTestAverageHR() + " pbm"); //(testInfo.getAverageHR());
 
