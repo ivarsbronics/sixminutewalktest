@@ -1187,47 +1187,35 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
                         weight[0] = Integer.valueOf((String) dataSnapshot.getValue());
                     }
                     if("birthDate".equals(dataSnapshot.getKey())){
-                        String bd = String.valueOf(dataSnapshot.getValue()).replace(" ", "-");
-                        SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy");
-                        //Date birthDate;
-                        try {
-                            /*translate birth date to calendar object*/
-                            Date birthDate = format.parse(bd);
-                            Log.d(TAG, "birthDate = " + birthDate);
-                            Calendar calBirthDate = Calendar.getInstance();
-                            calBirthDate.setTimeInMillis(birthDate.getTime());
-                            Log.d(TAG, "calBirthDate = " + calBirthDate);
+                        String bd = String.valueOf(dataSnapshot.getValue());
+                        String[] dayMonthYear = bd.split(" ");
+                        int d = Integer.parseInt(dayMonthYear[0]);
+                        int m = getMonthNumber(dayMonthYear[1]) -1;
+                        int y = Integer.parseInt(dayMonthYear[2]);
 
-                            /*create calendar object for current day*/
-                            long currentTime = System.currentTimeMillis();
-                            Log.d(TAG, "currentTime = " + currentTime);
-                            Calendar calNow = Calendar.getInstance();
-                            calNow.setTimeInMillis(currentTime);
-                            Log.d(TAG, "calNow = " + calNow);
-                            age[0] = calNow.get(Calendar.YEAR) - calBirthDate.get(Calendar.YEAR);
-                            Log.d(TAG, "age = " + age[0]);
+                        /*create calendar object for current day*/
+                        long currentTime = System.currentTimeMillis();
+                        //Log.d(TAG, "currentTime = " + currentTime);
+                        Calendar calNow = Calendar.getInstance();
+                        calNow.setTimeInMillis(currentTime);
+                        //Log.d(TAG, "calNow = " + calNow);
+                        age[0] = calNow.get(Calendar.YEAR) - y; //calBirthDate.get(Calendar.YEAR);
+                        //Log.d(TAG, "age = " + age[0]);
 
-                            /*age value postprocessing*/
-                            int currMonth = calNow.get(Calendar.MONTH) + 1;
-                            int birthMonth = calBirthDate.get(Calendar.MONTH) + 1;
-                            int months = currMonth - birthMonth;
-                            if ((months < 0) || (months == 0 && calNow.get(Calendar.DATE) < calBirthDate.get(Calendar.DATE))){
-                                age[0]--;
-                            }
-                            /*https://journals.lww.com/acsm-msse/Fulltext/2007/05000/Longitudinal_Modeling_of_the_Relationship_between.11.aspx*/
-                            maxHR[0] = (double) (207 - 0.7 * age[0]);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
+                        /*age value postprocessing*/
+                        int currMonth = calNow.get(Calendar.MONTH);// + 1;
+                        //int birthMonth = calBirthDate.get(Calendar.MONTH) + 1;
+                        int months = currMonth - m; //birthMonth;
+                        if ((months < 0) || (months == 0 && calNow.get(Calendar.DATE) < d /*calBirthDate.get(Calendar.DATE)*/)){
+                            age[0]--;
                         }
+                        /*https://journals.lww.com/acsm-msse/Fulltext/2007/05000/Longitudinal_Modeling_of_the_Relationship_between.11.aspx*/
+                        maxHR[0] = (double) (207 - 0.7 * age[0]);
                     }
                 }
 
-                Set<String> timeKeys = hrMap.keySet();
-                ArrayList<String> listOfTimeKeys = new ArrayList<>(timeKeys);
-                //ArrayList<Integer> integerListOfTimeKeys = new ArrayList<>();
                 Collection<String> hrValues = hrMap.values();
                 ArrayList<String> listOfHRValues = new ArrayList<>(hrValues);
-                //ArrayList<Integer> integerListOfHRValues = new ArrayList<>();
                 Iterator iterator = listOfHRValues.iterator();
                 int count = 0;
                 int sum = 0;
@@ -1315,5 +1303,48 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
             }
         });
+    }
+
+    private int getMonthNumber(String month) {
+        if ("JAN".equals(month)){
+            return 1;
+        }
+        if ("FEB".equals(month)){
+            return 2;
+        }
+        if ("MAR".equals(month)){
+            return 3;
+        }
+        if ("APR".equals(month)){
+            return 4;
+        }
+        if ("MAY".equals(month)){
+            return 5;
+        }
+        if ("JUN".equals(month)){
+            return 6;
+        }
+        if ("JUL".equals(month)){
+            return 7;
+        }
+        if ("AUG".equals(month)){
+            return 8;
+        }
+        if ("SEP".equals(month)){
+            return 9;
+        }
+        if ("OCT".equals(month)){
+            return 10;
+        }
+        if ("NOV".equals(month)){
+            return 11;
+        }
+        if ("DEC".equals(month)){
+            return 12;
+        }
+
+        //in case of unexpected text return -1
+        Log.d(TAG, "" + month);
+        return -1;
     }
 }
