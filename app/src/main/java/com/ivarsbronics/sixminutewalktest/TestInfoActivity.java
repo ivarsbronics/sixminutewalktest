@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,7 @@ public class TestInfoActivity extends AppCompatActivity {
 
     private TestInfo testInfo;
     private TextView txtTestInfo;
+    private Button btnBack;
     private double totalDistance, estimatedDistance;
     private boolean useUserEnteredDistance;
     private String testResults;
@@ -67,6 +70,14 @@ public class TestInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test_info);
 
         txtTestInfo = findViewById(R.id.txtTestInfo);
+        btnBack = findViewById(R.id.btnBack);
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         Intent intent = getIntent();
         testInfo = (TestInfo)intent.getParcelableExtra("EXTRA_TEST_INFO");
@@ -76,7 +87,7 @@ public class TestInfoActivity extends AppCompatActivity {
 
         Log.d(TAG, "## TestInfoActivity: getHRMap()" + testInfo.getHrMap());
 
-        if (testInfo.getDeviceName() != null && !"".equals(testInfo.getDeviceName())) {
+        if ((testInfo.getDeviceName() != null && !"".equals(testInfo.getDeviceName())) || !"Y".equals(testInfo.getHrMonitorSkipped())) {
 
             if (testInfo.getHrBelowZone1Percent() != null && !"".equals(testInfo.getHrBelowZone1Percent())) {
                 hrBelowZone1Percent = Double.parseDouble(testInfo.getHrBelowZone1Percent());
