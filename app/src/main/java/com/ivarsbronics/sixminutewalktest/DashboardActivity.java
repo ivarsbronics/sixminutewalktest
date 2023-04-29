@@ -42,6 +42,12 @@ public class DashboardActivity extends DrawerBaseActivity {
     private int testCount = 0;
 
     @Override
+    public void onBackPressed() {
+        /*do nothing*/
+        //super.onBackPressed();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);

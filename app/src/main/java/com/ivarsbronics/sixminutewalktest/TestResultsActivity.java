@@ -28,6 +28,12 @@ public class TestResultsActivity extends DrawerBaseActivity {
     private DecimalFormat df = new DecimalFormat("#0.00");
 
     @Override
+    public void onBackPressed() {
+        /*do nothing*/
+        //super.onBackPressed();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityTestResultsBinding = ActivityTestResultsBinding.inflate(getLayoutInflater());

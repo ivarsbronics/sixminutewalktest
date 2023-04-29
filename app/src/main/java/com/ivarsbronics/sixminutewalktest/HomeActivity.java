@@ -18,6 +18,12 @@ public class HomeActivity extends DrawerBaseActivity{
     private FirebaseUser currentUser;
     private TextView txtDisclaimerDetails;
 
+    @Override
+    public void onBackPressed() {
+        /*do nothing*/
+        //super.onBackPressed();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

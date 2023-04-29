@@ -47,6 +47,12 @@ public class ProfileActivity extends DrawerBaseActivity {
     private String genderChoice;
 
     @Override
+    public void onBackPressed() {
+        /*do nothing*/
+        //super.onBackPressed();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityProfileBinding = ActivityProfileBinding.inflate(getLayoutInflater());
