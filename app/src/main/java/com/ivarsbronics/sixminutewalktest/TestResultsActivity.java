@@ -44,7 +44,7 @@ public class TestResultsActivity extends DrawerBaseActivity {
         setContentView(activityTestResultsBinding.getRoot());
 
         txtTestInfo = findViewById(R.id.txtTestInfo);
-        btnDone = findViewById(R.id.btnBack);
+        btnDone = findViewById(R.id.btnDone);
 
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override

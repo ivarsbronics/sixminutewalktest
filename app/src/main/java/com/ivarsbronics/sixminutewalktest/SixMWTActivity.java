@@ -860,15 +860,23 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        /*Log.d(TAG, "### onLocationChanged " + totalDistance);
+        if (saveLocationData){
+            Log.d(TAG, "### onLocationChanged: saveLocationData");
+        }
+        if (doLocationMap){
+            Log.d(TAG, "### onLocationChanged: doLocationMap");
+        }*/
         if (saveLocationData) {
             if (prevLocation == null){
                 prevLocation = location;
+                Log.d(TAG, "### onLocationChanged: saveLocationData: first location" + prevLocation);
             }
             else {
                 if (doLocationMap) {
                     double distance = SphericalUtil.computeDistanceBetween(new LatLng(prevLocation.getLatitude(), prevLocation.getLongitude()), new LatLng(location.getLatitude(), location.getLongitude()));
                     totalDistance = totalDistance + distance;
-                    df.format(totalDistance);
+                    //df.format(totalDistance);
                 }
             }
             latitude = location.getLatitude();
@@ -1091,11 +1099,11 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         locationManager.removeUpdates(SixMWTActivity.this);
         prevLocation = null;
         if (endTestPrematurely) {
-            Log.d(TAG, "### endTest()  endTestPrematurely = true");
+            //Log.d(TAG, "### endTest()  endTestPrematurely = true");
             startActivity(new Intent(SixMWTActivity.this, HomeActivity.class));
-            Log.d(TAG, "### endTest()  END");
+            //Log.d(TAG, "### endTest()  END");
         } else {
-            Log.d(TAG, "### endTest()  endTestPrematurely = false");
+            //Log.d(TAG, "### endTest()  endTestPrematurely = false");
             testInfo.setTestDateTime(DateFormat.format("dd-MMM-yyyy HH:mm:ss", Long.parseLong(testInfo.getTestTimeInMillis())).toString());
             testInfo.setPostTestValueDyspnea(valueDyspnea);
             testInfo.setPostTestValueFatigue(valueFatigue);
