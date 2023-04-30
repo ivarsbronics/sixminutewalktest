@@ -4,6 +4,8 @@ package com.ivarsbronics.sixminutewalktest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import com.ivarsbronics.sixminutewalktest.databinding.ActivityTestResultsBinding;
 
@@ -23,6 +25,8 @@ public class TestResultsActivity extends DrawerBaseActivity {
 
     private TestInfo testInfo;
 
+    private Button btnDone;
+
     private boolean useUserEnteredDistance = false;
 
     private DecimalFormat df = new DecimalFormat("#0.00");
@@ -40,6 +44,14 @@ public class TestResultsActivity extends DrawerBaseActivity {
         setContentView(activityTestResultsBinding.getRoot());
 
         txtTestInfo = findViewById(R.id.txtTestInfo);
+        btnDone = findViewById(R.id.btnBack);
+
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(TestResultsActivity.this, DashboardActivity.class));
+            }
+        });
 
         Intent intent = getIntent();
         testInfo = (TestInfo)intent.getParcelableExtra("EXTRA_TEST_INFO");
