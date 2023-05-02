@@ -1003,6 +1003,7 @@ public class SixMWTActivity extends AppCompatActivity implements AdapterView.OnI
         txtHeaderText.setText("Pre-Test Parameters");
         txtInfo.setText("Please fill pre-test parameters if you have tools to do the " +
                 "measurements.");
+        txtInfo.setVisibility(View.VISIBLE);
         txtDyspnea.setVisibility(View.VISIBLE);
         txtFatigue.setVisibility(View.VISIBLE);
         spinnerDyspnea.setVisibility(View.VISIBLE);
