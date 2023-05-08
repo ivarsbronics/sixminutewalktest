@@ -30,7 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private EditText email, reemail, password, repassword;
     private Button btnRegister, btnTermsApproval;
-    private TextView txtLogin, txtTestVersionTerms;
+    private TextView txtLogin, txtTestVersionTerms, txtTermsOfUseAndDisclaimer;
 
     @Override
     public void onBackPressed() {
@@ -51,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
         txtLogin = findViewById(R.id.txtLogIn);
         txtTestVersionTerms = findViewById(R.id.txtTestVersionTerms);
+        txtTermsOfUseAndDisclaimer = findViewById(R.id.txtTermsOfUseAndDisclaimer);
         btnTermsApproval = findViewById(R.id.btnTermsApproval);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void agreeToTermsAndProceed() {
+        txtTermsOfUseAndDisclaimer.setVisibility(View.GONE);
         txtTestVersionTerms.setVisibility(View.GONE);
         btnTermsApproval.setVisibility(View.GONE);
         email.setVisibility(View.VISIBLE);
